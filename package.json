@@ -1,0 +1,29 @@
+{
+  "name": "karin-plugin-adapter-icqq",
+  "version": "0.0.1",
+  "description": "icqq adapter",
+  "main": "./lib/index.js",
+  "author": "karin",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@icqqjs/icqq": "latest",
+    "@inquirer/prompts": "5.1.2"
+  },
+  "peerDependenciesMeta": {
+    "@icqqjs/icqq": {
+      "optional": true
+    }
+  },
+  "karin": {
+    "apps": [],
+    "outDir": "lib",
+    "static": [
+      "config"
+    ]
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "fix": "eslint lib/**/*.js --fix"
+  }
+}
