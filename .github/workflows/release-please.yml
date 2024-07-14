@@ -25,6 +25,11 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
+      # 创建npmrc文件
+      - run: npm run npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        if: ${{ steps.release.outputs.release_created }}
       # Install dependencies
       - run: npm install
         env:
