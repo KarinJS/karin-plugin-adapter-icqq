@@ -152,7 +152,7 @@ export async function device (event: { url: string, phone: string }, adapter: Ad
       ],
     })
 
-    if (res === '0') {
+    if (res === '1') {
       adapter.logger('info', [
         '\n\n------------------------------------',
         '请复制链接从浏览器打开进行验证:',

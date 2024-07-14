@@ -8,6 +8,6 @@ const dirname = path.resolve(filePath, '../../../')
 /** 插件包的名称 */
 const basename = path.basename(dirname)
 /** 插件包相对路径 */
-const dirPath = './plugins/' + basename
+const dirPath = dirname
 
 export { dirPath, basename }
