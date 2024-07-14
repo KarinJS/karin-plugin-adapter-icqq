@@ -23,6 +23,6 @@ pkg.devDependencies = {
 fs.writeFileSync(file, JSON.stringify(pkg, null, 2), 'utf8')
 
 // 修改 src/code/index.ts 中的 import @icqqjs/icqq 为 import icqq
-const ts = './src/core/index.ts'
+const ts = './lib/core/index.js'
 const code = fs.readFileSync(ts, 'utf8')
 fs.writeFileSync(ts, code.replace('@icqqjs/icqq', 'icqq'), 'utf8')
