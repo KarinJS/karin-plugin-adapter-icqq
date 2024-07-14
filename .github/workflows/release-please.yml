@@ -25,10 +25,13 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
-      # 创建npmrc文件
-      - run: |
-          echo "@icqqjs:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${{ secrets.NODE_AUTH_TOKEN }}" > ~/.npmrc
-        if: ${{ steps.release.outputs.release_created }}
+      # 创建 .npmrc 文件
+      - name: Create .npmrc file
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
+          echo "@icqqjs:registry=https://npm.pkg.github.com" >> ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       # Install dependencies
       - run: npm install
         env:
