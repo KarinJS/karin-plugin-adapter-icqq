@@ -2,10 +2,17 @@
   "name": "karin-plugin-adapter-icqq",
   "version": "0.0.1",
   "description": "icqq adapter",
-  "main": "./lib/index.js",
-  "author": "karin",
   "license": "MIT",
+  "author": "karin",
   "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "deldev": "node lib/tools/pkg.js",
+    "fix": "eslint lib/**/*.js --fix",
+    "pub": "npm publish --access public",
+    "sort": "npx sort-package-json"
+  },
   "dependencies": {
     "@icqqjs/icqq": "latest",
     "@inquirer/prompts": "5.1.2"
@@ -18,10 +25,10 @@
     "@types/ws": "latest",
     "eslint": "latest",
     "neostandard": "latest",
+    "node-karin": "latest",
     "tsc-alias": "latest",
     "tsx": "latest",
-    "typescript": "latest",
-    "node-karin": "latest"
+    "typescript": "latest"
   },
   "peerDependenciesMeta": {
     "@icqqjs/icqq": {
@@ -31,10 +38,5 @@
   "karin": {
     "apps": [],
     "outDir": "lib"
-  },
-  "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
-    "fix": "eslint lib/**/*.js --fix",
-    "pub": "npm publish --access public"
   }
 }
