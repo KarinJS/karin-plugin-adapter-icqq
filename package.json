@@ -38,5 +38,12 @@
   "karin": {
     "apps": [],
     "outDir": "lib"
-  }
+  },
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ]
 }
