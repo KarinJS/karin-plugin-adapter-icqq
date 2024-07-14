@@ -11,7 +11,8 @@
     "deldev": "node tools/pkg.js",
     "fix": "eslint lib/**/*.js --fix",
     "pub": "npm publish --access public",
-    "sort": "sort-package-json"
+    "sort": "sort-package-json",
+    "icqq": "node tools/icqq.js"
   },
   "dependencies": {
     "@icqqjs/icqq": "latest",
