@@ -10,6 +10,19 @@
     "@icqqjs/icqq": "latest",
     "@inquirer/prompts": "5.1.2"
   },
+  "devDependencies": {
+    "@types/express": "latest",
+    "@types/lodash": "latest",
+    "@types/node": "latest",
+    "@types/node-schedule": "latest",
+    "@types/ws": "latest",
+    "eslint": "latest",
+    "neostandard": "latest",
+    "tsc-alias": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "node-karin": "latest"
+  },
   "peerDependenciesMeta": {
     "@icqqjs/icqq": {
       "optional": true
@@ -17,13 +30,11 @@
   },
   "karin": {
     "apps": [],
-    "outDir": "lib",
-    "static": [
-      "config"
-    ]
+    "outDir": "lib"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
-    "fix": "eslint lib/**/*.js --fix"
+    "fix": "eslint lib/**/*.js --fix",
+    "pub": "npm publish --access public"
   }
 }

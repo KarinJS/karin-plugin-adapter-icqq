@@ -1,7 +1,7 @@
 import { slider, device } from './login'
 import { CfgType } from '../imports/types'
 import { Client, MessageElem, segment as Segment, parseGroupMessageId } from '@icqqjs/icqq'
-import { listener, KarinMessage, KarinAdapter, contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, KarinNodeElement } from 'node-karin'
+import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType } from 'node-karin'
 
 /**
  * - ICQQ适配器
@@ -38,23 +38,25 @@ export class AdapterICQQ implements KarinAdapter {
       if ('discuss' in data) return
       const elements = await this.AdapterConvertKarin(data.message)
       const message = {
-        event: (data.post_type) as 'message',
+        event: EventType.Message as EventType.Message,
+        raw_event: data,
+        sub_event: data.sub_type === 'group' ? MessageSubType.GroupMessage : MessageSubType.PrivateMessage,
         event_id: data.message_id + '',
         self_id: this.account.uid + '',
         user_id: data.sender.user_id + '',
         time: data.time,
         message_id: data.message_id + '',
-        message_seq: data.seq + '',
+        message_seq: data.seq,
         sender: {
           ...data.sender,
           uid: data.sender.user_id + '',
           uin: data.sender.user_id + '',
           nick: data.sender.nickname || '',
-          role: ('role' in data.sender ? data.sender.role || '' : '') as Role,
+          role: 'role' in data.sender ? data.sender.role as Role || Role.Unknown : Role.Unknown,
         },
         elements,
         contact: {
-          scene: (data.message_type === 'private' ? 'friend' : 'group') as 'friend' | 'group',
+          scene: data.message_type === 'private' ? Scene.Private : Scene.Group,
           peer: data.message_type === 'private' ? data.sender.user_id + '' : data.group_id + '',
           sub_peer: '',
         },
@@ -84,7 +86,7 @@ export class AdapterICQQ implements KarinAdapter {
       const group_id = data.group_id + ''
 
       const contact = {
-        scene: 'group' as 'group',
+        scene: Scene.Group,
         peer: group_id,
         sub_peer: group_id,
       }
@@ -93,7 +95,7 @@ export class AdapterICQQ implements KarinAdapter {
         uid: user_id,
         uin: user_id,
         nick: '',
-        role: 'unknown' as Role,
+        role: Role.Unknown,
       }
 
       switch (data.sub_type) {
@@ -108,6 +110,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -115,7 +118,7 @@ export class AdapterICQQ implements KarinAdapter {
             sender,
             contact,
             content,
-            sub_event: 'group_sign_in' as 'group_sign_in',
+            sub_event: NoticeSubType.GroupSignIn,
             group_id,
           }
           notice = new KarinNotice(options)
@@ -132,6 +135,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -139,7 +143,7 @@ export class AdapterICQQ implements KarinAdapter {
             sender,
             contact,
             content,
-            sub_event: 'group_member_increase' as 'group_member_increase',
+            sub_event: NoticeSubType.GroupMemberIncrease,
           }
           notice = new KarinNotice(options)
           break
@@ -169,6 +173,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -177,7 +182,7 @@ export class AdapterICQQ implements KarinAdapter {
             contact,
             content,
             group_id,
-            sub_event: 'group_member_decrease' as 'group_member_decrease',
+            sub_event: NoticeSubType.GroupMemberDecrease,
           }
           notice = new KarinNotice(options)
           break
@@ -195,6 +200,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -203,7 +209,7 @@ export class AdapterICQQ implements KarinAdapter {
             contact,
             content,
             group_id,
-            sub_event: 'group_recall' as 'group_recall',
+            sub_event: NoticeSubType.GroupRecall,
           }
           notice = new KarinNotice(options)
           break
@@ -223,6 +229,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -231,7 +238,7 @@ export class AdapterICQQ implements KarinAdapter {
             contact,
             content,
             group_id,
-            sub_event: 'group_poke' as 'group_poke',
+            sub_event: NoticeSubType.GroupPoke,
           }
           notice = new KarinNotice(options)
           break
@@ -245,6 +252,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -253,7 +261,7 @@ export class AdapterICQQ implements KarinAdapter {
             contact,
             content,
             group_id,
-            sub_event: 'group_admin_changed' as 'group_admin_changed',
+            sub_event: NoticeSubType.GroupAdminChanged,
           }
           notice = new KarinNotice(options)
           break
@@ -271,6 +279,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -279,7 +288,7 @@ export class AdapterICQQ implements KarinAdapter {
             contact,
             content,
             group_id,
-            sub_event: 'group_member_ban' as 'group_member_ban',
+            sub_event: NoticeSubType.GroupMemberBan,
           }
           notice = new KarinNotice(options)
           break
@@ -301,7 +310,7 @@ export class AdapterICQQ implements KarinAdapter {
       const event_id = `notice.${user_id}.${time}`
 
       const contact = {
-        scene: 'group' as 'group',
+        scene: Scene.Group,
         peer: user_id,
         sub_peer: user_id,
       }
@@ -310,7 +319,7 @@ export class AdapterICQQ implements KarinAdapter {
         uid: user_id,
         uin: user_id,
         nick: '',
-        role: 'unknown' as Role,
+        role: Role.Unknown,
       }
 
       switch (data.sub_type) {
@@ -338,6 +347,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -345,7 +355,7 @@ export class AdapterICQQ implements KarinAdapter {
             sender,
             contact,
             content,
-            sub_event: 'private_poke' as 'private_poke',
+            sub_event: NoticeSubType.PrivatePoke,
           }
           notice = new KarinNotice(options)
           break
@@ -359,6 +369,7 @@ export class AdapterICQQ implements KarinAdapter {
           }
 
           const options = {
+            raw_event: data,
             time,
             self_id,
             user_id,
@@ -366,7 +377,7 @@ export class AdapterICQQ implements KarinAdapter {
             sender,
             contact,
             content,
-            sub_event: 'private_recall' as 'private_recall',
+            sub_event: NoticeSubType.PrivateRecall,
           }
           notice = new KarinNotice(options)
           break
@@ -575,7 +586,7 @@ export class AdapterICQQ implements KarinAdapter {
     return data
   }
 
-  async SendMessage (contact: contact, elements: Array<KarinElement>) {
+  async SendMessage (contact: Contact, elements: Array<KarinElement>) {
     const message = await this.KarinConvertAdapter(elements)
     if (contact.scene === 'friend') {
       return await this.super.pickUser(Number(contact.peer)).sendMsg(message)
@@ -606,14 +617,14 @@ export class AdapterICQQ implements KarinAdapter {
     return { account_uid: this.account.uid, account_uin: this.account.uin, account_name: this.super.nickname }
   }
 
-  async RecallMessage (contact: contact, message_id: string) {
+  async RecallMessage (contact: Contact, message_id: string) {
     if (contact.scene === 'friend') {
       return await this.super.pickUser(Number(contact.peer)).recallMsg(message_id)
     }
     return await this.super.pickGroup(Number(contact.peer)).recallMsg(message_id)
   }
 
-  async ReactMessageWithEmoji (contact: contact, message_id: string, face_id: number, is_set: boolean) {
+  async ReactMessageWithEmoji (contact: Contact, message_id: string, face_id: number, is_set: boolean) {
     const { seq } = parseGroupMessageId(message_id)
     return await this.super.pickGroup(Number(contact.peer)).setReaction(seq, face_id + '')
   }
@@ -622,7 +633,7 @@ export class AdapterICQQ implements KarinAdapter {
     return await this.super.pickUser(Number(target_uid_or_uin)).thumbUp(vote_count)
   }
 
-  async sendForwardMessage (contact: contact, elements: KarinNodeElement[]) {
+  async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
     const userId = Number(this.account.uid)
     const nickName = this.account.name
     const messages = []
@@ -630,12 +641,12 @@ export class AdapterICQQ implements KarinAdapter {
     for (const v of elements) {
       const user_id = Number(v.user_id) || userId
       const nickname = v.nickname || nickName
-      const content = Array.isArray(v.content) ? v.content : [v.content]
+      const content = (Array.isArray(v.content) ? v.content : [v.content]) as KarinElement[]
       const message = await this.KarinConvertAdapter(content)
       messages.push(Segment.fake(user_id, message, nickname))
     }
 
-    if (contact.scene === 'friend') {
+    if (contact.scene === Scene.Private) {
       const res = await this.super.makeForwardMsg(messages, true)
       return await this.super.pickUser(Number(contact.peer)).sendMsg(res)
     } else {
@@ -673,4 +684,17 @@ export class AdapterICQQ implements KarinAdapter {
   async GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
+  DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
+  UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
+  GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
+  GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
+  PokeMember (): Promise<any> { throw new Error('Method not implemented.') }
+  SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 }
