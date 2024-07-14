@@ -41,17 +41,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
-      # 删除lib
-      - run: rm -rf lib
-        if: ${{ steps.release.outputs.release_created }}
-      # 执行更换依赖脚本
-      - run: npm run icqq
-        if: ${{ steps.release.outputs.release_created }}
-      # 二次构建
-      - run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
-      # 删除开发依赖
-      - run: npm run deldev
+      # 二次构建旧版本
+      - run: rm -rf lib && npm run icqq && npm run build && npm run deldev
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: npm run pub
