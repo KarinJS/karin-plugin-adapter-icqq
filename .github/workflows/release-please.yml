@@ -42,7 +42,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
       # 二次构建旧版本
-      - run: rm -rf lib && npm run icqq && npm run build && npm run deldev
+      - run: rm -rf lib && npm run icqq && npm install && npm run build && npm run deldev
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: npm run pub
