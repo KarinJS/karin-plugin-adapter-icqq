@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.1.4...v1.2.0) (2024-07-15)
+
+
+### Features
+
+* 适配引用回复 新增npm安装方法 ([77c4c54](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/77c4c54112157c65b3866d598af09f22b4aba13a))
+
+
+### Bug Fixes
+
+* 优化文档说明 ([51d6e6c](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/51d6e6c9ab42dd78302012f243b9b986ac9d48e7))
+
 ## [1.1.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.1.3...v1.1.4) (2024-07-14)
 
 
