@@ -1,30 +1,41 @@
 # icqq 适配器
 
-## 克隆仓库
+## 安装插件
 
-karin根目录执行以下命令克隆仓库到本地
+> 如果不知道什么是`token` 那就安装`无token`版本即可
 
-```bash
-git clone https://github.com/karinjs/karin-plugin-adapter-icqq.git ./plugins/karin-plugin-adapter-icqq
-```
-
-## 配置token
-
-> [!IMPORTANT]
-> 请自行获取token 无token需继续使用 请参考下方降级
-
-在 `./plugins/karin-plugin-adapter-icqq`下创建`.npmrc`，填入
-
-```txt
-@icqqjs:registry=https://npm.pkg.github.com/
-//npm.pkg.github.com/:_authToken=更改为你的token
-
-```
-
-## 安装依赖
+### 无token
 
 ```bash
-pnpm install --filter=karin-plugin-adapter-icqq
+pnpm add karin-plugin-adapter-icqq-old -w
+```
+
+### 有token
+
+1. 在你的项目根目录新建文件 `.npmrc` ，并录入以下内容
+
+```text
+@icqqjs:registry=https://npm.pkg.github.com
+```
+
+2. 登录账户
+
+在karin根目录执行以下命令，按照提示进行操作
+
+```bash
+npm login --scope=@icqqjs --auth-type=legacy --registry=https://npm.pkg.github.com
+
+# 回车，根据提示登录github
+
+UserName: # 你的github账号 请填写小写
+Password: # 前往 https://github.com/settings/tokens/new  获取，scopes勾选 read:packages 
+E-Mail: # 你的公开邮箱地址
+```
+
+3. 安装插件
+
+```bash
+pnpm add karin-plugin-adapter-icqq -w
 ```
 
 ## 配置
@@ -71,34 +82,6 @@ list:
       # 是否缓存群员列表，群多的时候(500~1000)会多占据约100MB+内存
       cache_group_member: true
 
-```
-
-只需要一个删除第二个即可。
-
-## 降级
-
-打开`plugins\karin-plugin-adapter-icqq`，执行
-
-```bash
-pnpm add icqq -w
-```
-
-打开`plugins\karin-plugin-adapter-icqq\lib\core\index.js`  
-
-修改前:
-
-```js
-import { slider, device } from './login.js'
-import { Client, segment as Segment, parseGroupMessageId } from '@icqqjs/icqq' // 修改这里
-import { listener, KarinMessage, logger, segment, KarinNotice } from 'node-karin'
-```
-
-修改后:
-
-```js
-import { slider, device } from './login.js'
-import { Client, segment as Segment, parseGroupMessageId } from 'icqq' // 修改这里
-import { listener, KarinMessage, logger, segment, KarinNotice } from 'node-karin'
 ```
 
 ## 鸣谢

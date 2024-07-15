@@ -1,6 +1,6 @@
 import { slider, device } from './login'
 import { CfgType } from '../imports/types'
-import { Client, MessageElem, segment as Segment, parseGroupMessageId } from '@icqqjs/icqq'
+import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId } from '@icqqjs/icqq'
 import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType } from 'node-karin'
 
 /**
@@ -37,6 +37,20 @@ export class AdapterICQQ implements KarinAdapter {
     this.super.on('message', async data => {
       if ('discuss' in data) return
       const elements = await this.AdapterConvertKarin(data.message)
+
+      /** 引用回复 */
+      if (data.source) {
+        /** 构建message_id */
+        let message_id = ''
+        if (data.message_type === 'group') {
+          message_id = genGroupMessageId(data.group_id, data.source.user_id, data.source.seq, data.rand, data.source.time)
+        } else {
+          message_id = genDmMessageId(data.source.user_id, data.source.seq, data.rand, data.source.time)
+        }
+
+        elements.unshift(segment.reply(message_id))
+      }
+
       const message = {
         event: EventType.Message as EventType.Message,
         raw_event: data,
@@ -589,7 +603,7 @@ export class AdapterICQQ implements KarinAdapter {
   async SendMessage (contact: Contact, elements: Array<KarinElement>) {
     const message = await this.KarinConvertAdapter(elements)
     if (contact.scene === 'friend') {
-      return await this.super.pickUser(Number(contact.peer)).sendMsg(message)
+      return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
     }
     return await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
   }
@@ -619,7 +633,7 @@ export class AdapterICQQ implements KarinAdapter {
 
   async RecallMessage (contact: Contact, message_id: string) {
     if (contact.scene === 'friend') {
-      return await this.super.pickUser(Number(contact.peer)).recallMsg(message_id)
+      return await this.super.pickFriend(Number(contact.peer)).recallMsg(message_id)
     }
     return await this.super.pickGroup(Number(contact.peer)).recallMsg(message_id)
   }
@@ -630,7 +644,7 @@ export class AdapterICQQ implements KarinAdapter {
   }
 
   async VoteUser (target_uid_or_uin: string, vote_count: number) {
-    return await this.super.pickUser(Number(target_uid_or_uin)).thumbUp(vote_count)
+    return await this.super.pickFriend(Number(target_uid_or_uin)).thumbUp(vote_count)
   }
 
   async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
@@ -648,35 +662,78 @@ export class AdapterICQQ implements KarinAdapter {
 
     if (contact.scene === Scene.Private) {
       const res = await this.super.makeForwardMsg(messages, true)
-      return await this.super.pickUser(Number(contact.peer)).sendMsg(res)
+      return await this.super.pickFriend(Number(contact.peer)).sendMsg(res)
     } else {
       const res = await this.super.makeForwardMsg(messages, false)
       return await this.super.pickGroup(Number(contact.peer)).sendMsg(res)
     }
   }
 
-  async UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  async SetEssenceMessage (_group_id: string, message_id: string) {
+    const res = await this.super.setEssenceMessage(message_id)
+    return typeof res === 'string'
+  }
 
+  async DeleteEssenceMessage (_group_id: string, message_id: string) {
+    const res = await this.super.removeEssenceMessage(message_id)
+    return typeof res === 'string'
+  }
+
+  async UploadPrivateFile (user_id: string, file: string, name: string) {
+    const res = await this.super.pickFriend(Number(user_id)).sendFile(file, name)
+    return typeof res === 'string'
+  }
+
+  async UploadGroupFile (group_id: string, file: string, name: string, folder: string) {
+    const res = await this.super.pickGroup(Number(group_id)).sendFile(file, folder, name)
+    return typeof res === 'string'
+  }
+
+  async SetGroupWholeBan (group_id: string, is_ban: boolean) {
+    return await this.super.pickGroup(Number(group_id)).muteAll(is_ban)
+  }
+
+  async ModifyGroupName (group_id: string, name: string) {
+    return await this.super.pickGroup(Number(group_id)).setName(name)
+  }
+
+  async SetGroupUniqueTitle (group_id: string, user_id: string, title: string) {
+    return await this.super.pickGroup(Number(group_id)).setTitle(Number(user_id), title)
+  }
+
+  async ModifyMemberCard (group_id: string, user_id: string, card: string) {
+    return await this.super.pickGroup(Number(group_id)).setCard(Number(user_id), card)
+  }
+
+  async BanMember (group_id: string, user_id: string, duration: number) {
+    return await this.super.pickGroup(Number(group_id)).muteMember(Number(user_id), duration)
+  }
+
+  async PokeMember (group_id: string, user_id: string) {
+    return await this.super.pickGroup(Number(group_id)).pokeMember(Number(user_id))
+  }
+
+  async KickMember (group_id: string, user_id: string, reject_add_request: boolean, msg?: string) {
+    return await this.super.pickGroup(Number(group_id)).kickMember(Number(user_id), msg, reject_add_request)
+  }
+
+  async SetGroupAdmin (group_id: string, user_id: string, is_admin: boolean) {
+    return await this.super.pickGroup(Number(group_id)).setAdmin(Number(user_id), is_admin)
+  }
+
+  async LeaveGroup (group_id: string, _reject_add_request: boolean) {
+    return await this.super.pickGroup(Number(group_id)).quit()
+  }
+
+  async UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async GetMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
   async DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async DeleteEssenceMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
   async SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
   async SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async UploadPrivateFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async UploadGroupFile (): Promise<any> { throw new Error('Method not implemented.') }
   async SendMessageByResId (): Promise<any> { throw new Error('Method not implemented.') }
   async GetHistoryMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async KickMember (): Promise<any> { throw new Error('Method not implemented.') }
-  async BanMember (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupWholeBan (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupAdmin (): Promise<any> { throw new Error('Method not implemented.') }
-  async ModifyMemberCard (): Promise<any> { throw new Error('Method not implemented.') }
-  async ModifyGroupName (): Promise<any> { throw new Error('Method not implemented.') }
-  async LeaveGroup (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupUniqueTitle (): Promise<any> { throw new Error('Method not implemented.') }
   async GetStrangerProfileCard (): Promise<any> { throw new Error('Method not implemented.') }
   async GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
@@ -684,17 +741,18 @@ export class AdapterICQQ implements KarinAdapter {
   async GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
-  DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
-  GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
-  UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
-  GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
-  GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
-  PokeMember (): Promise<any> { throw new Error('Method not implemented.') }
-  SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
+
+  // 以下方法暂不打算实现
+  async UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  async DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
+  async CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  async RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  async DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
+  async DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
+  async ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
+  async SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 }
