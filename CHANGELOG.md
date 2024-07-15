@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.2.0...v1.2.1) (2024-07-15)
+
+
+### Bug Fixes
+
+* 缺少的replyCallback ([2991105](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/2991105b3edd2124106fbedc633762371e3b64cb))
+
 ## [1.2.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.1.4...v1.2.0) (2024-07-15)
 
 
