@@ -26,3 +26,7 @@ fs.writeFileSync(file, JSON.stringify(pkg, null, 2), 'utf8')
 const ts = './lib/core/index.js'
 const code = fs.readFileSync(ts, 'utf8')
 fs.writeFileSync(ts, code.replace('@icqqjs/icqq', 'icqq'), 'utf8')
+
+const ts1 = './lib/index.js'
+const code1 = fs.readFileSync(ts, 'utf8')
+fs.writeFileSync(ts1, code1.replace('@icqqjs/icqq', 'icqq'), 'utf8')
