@@ -313,6 +313,15 @@ export class AdapterICQQ implements KarinAdapter {
         }
       }
 
+      notice.bot = this
+      /**
+       * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
+       */
+      notice.replyCallback = async elements => {
+        const message = await this.KarinConvertAdapter(elements)
+        return await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
+      }
+
       listener.emit('notice', notice)
     })
 
@@ -396,6 +405,15 @@ export class AdapterICQQ implements KarinAdapter {
           notice = new KarinNotice(options)
           break
         }
+      }
+
+      notice.bot = this
+      /**
+       * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
+       */
+      notice.replyCallback = async elements => {
+        const message = await this.KarinConvertAdapter(elements)
+        return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
       }
 
       listener.emit('notice', notice)
