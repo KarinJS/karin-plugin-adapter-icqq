@@ -2,15 +2,21 @@
 
 ## 安装插件
 
+> [!IMPORTANT]
 > 如果不知道什么是`token` 那就安装`无token`版本即可
 
-### 无token
+<details>
+<summary>无token版本</summary>
 
 ```bash
 pnpm add karin-plugin-adapter-icqq-old -w
 ```
 
-### 有token
+</details>
+
+<details>
+<summary>有token点击展开查看</summary>
+
 
 1. 在你的项目根目录新建文件 `.npmrc` ，并录入以下内容
 
@@ -37,6 +43,8 @@ E-Mail: # 你的公开邮箱地址
 ```bash
 pnpm add karin-plugin-adapter-icqq -w
 ```
+
+</details>
 
 ## 配置
 
