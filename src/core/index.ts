@@ -478,7 +478,7 @@ export class AdapterICQQ implements KarinAdapter {
           elements.push(segment.reply(i.id))
           break
         case 'json':
-          elements.push(segment.json(i.data.data))
+          elements.push(segment.json(i.data))
           break
         case 'xml':
           elements.push(segment.xml(i.data))
