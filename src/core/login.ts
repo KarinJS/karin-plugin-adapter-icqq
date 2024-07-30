@@ -2,7 +2,8 @@ import { Agent } from 'https'
 import { AdapterICQQ } from './index'
 import { listener, logger } from 'node-karin'
 import { input, select } from '@inquirer/prompts'
-import { axios, ws as WebSocket } from 'node-karin/modules.js'
+import axios from 'node-karin/axios'
+import WebSocket from 'node-karin/ws'
 
 /**
  * 处理滑块验证码

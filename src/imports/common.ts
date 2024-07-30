@@ -1,4 +1,5 @@
-import { lodash, moment } from 'node-karin/modules.js'
+import lodash from 'node-karin/lodash'
+import moment from 'node-karin/moment'
 
 class Common {
   /**
