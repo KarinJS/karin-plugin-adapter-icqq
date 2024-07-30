@@ -30,11 +30,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
+      # 添加node-karin开发依赖
+      - run: npm install node-karin@latest --save-dev
+        if: ${{ steps.release.outputs.release_created }}
       # 构建输出
       - run: npm run build
         if: ${{ steps.release.outputs.release_created }}
-      # 删除开发依赖
-      - run: npm run deldev
+      # 安装jq工具 删除开发依赖
+      - run: sudo apt-get install jq && jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: npm run pub

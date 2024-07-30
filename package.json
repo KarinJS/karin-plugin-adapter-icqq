@@ -8,11 +8,10 @@
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
-    "deldev": "node tools/pkg.js",
     "fix": "eslint lib/**/*.js --fix",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
-    "icqq": "node tools/icqq.js"
+    "icqq": "node lib/tools/icqq.js"
   },
   "dependencies": {
     "@icqqjs/icqq": "latest",
@@ -26,7 +25,6 @@
     "@types/ws": "latest",
     "eslint": "latest",
     "neostandard": "latest",
-    "node-karin": "latest",
     "tsc-alias": "latest",
     "tsx": "latest",
     "typescript": "latest"

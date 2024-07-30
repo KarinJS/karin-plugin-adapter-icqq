@@ -6,20 +6,6 @@ pkg.dependencies.icqq = 'latest'
 delete pkg.dependencies['@icqqjs/icqq']
 pkg.name = 'karin-plugin-adapter-icqq-old'
 
-pkg.devDependencies = {
-  '@types/express': 'latest',
-  '@types/lodash': 'latest',
-  '@types/node': 'latest',
-  '@types/node-schedule': 'latest',
-  '@types/ws': 'latest',
-  eslint: 'latest',
-  neostandard: 'latest',
-  'node-karin': 'latest',
-  'tsc-alias': 'latest',
-  tsx: 'latest',
-  typescript: 'latest',
-}
-
 fs.writeFileSync(file, JSON.stringify(pkg, null, 2), 'utf8')
 
 // 修改 src/code/index.ts 中的 import @icqqjs/icqq 为 import icqq
