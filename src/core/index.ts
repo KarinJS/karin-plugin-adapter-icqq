@@ -743,8 +743,97 @@ export class AdapterICQQ implements KarinAdapter {
     return await this.super.pickGroup(Number(group_id)).quit()
   }
 
-  async UploadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetMessage (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetMessage (contact: Contact, messageId: string) {
+    const res = await this.super.getMsg(messageId)
+    if (!res) throw TypeError('消息不存在')
+    const elements = await this.AdapterConvertKarin(res.message)
+    return {
+      contact,
+      elements,
+      time: res.time,
+      message_seq: res.seq,
+      message_id: messageId,
+      user_id: res.sender.user_id + '',
+      sender: {
+        uid: res.sender.user_id + '',
+        uin: res.sender.user_id + '',
+        nick: res.sender.nickname || '',
+        role: 'role' in res.sender ? res.sender.role as Role || Role.Unknown : Role.Unknown,
+      },
+    }
+  }
+
+  async UploadForwardMessage (contact: Contact, elements: Array<NodeElement>) {
+    const userId = Number(this.account.uid)
+    const nickName = this.account.name
+    const messages = []
+
+    for (const v of elements) {
+      const user_id = Number(v.user_id) || userId
+      const nickname = v.nickname || nickName
+      const content = (Array.isArray(v.content) ? v.content : [v.content]) as KarinElement[]
+      const message = await this.KarinConvertAdapter(content)
+      messages.push(Segment.fake(user_id, message, nickname))
+    }
+
+    if (contact.scene === Scene.Private) {
+      const result = await this.super.makeForwardMsg(messages, true)
+      return result.data.meta.detail.resid
+    } else {
+      const result = await this.super.makeForwardMsg(messages, false)
+      return result.data.meta.detail.resid
+    }
+  }
+
+  async GetGroupMemberList (group_id: string, refresh?: boolean) {
+    const result = await this.super.pickGroup(Number(group_id)).getMemberMap(refresh)
+    const members = []
+    for (const [key, value] of result.entries()) {
+      const unfriendly = await this.GetGroupMemberInfo(group_id, key + '')
+      members.push({
+        uid: key + '',
+        uin: key + '',
+        nick: value.nickname,
+        age: value.age,
+        unique_title: value.title || '',
+        unique_title_expire_time: value.title_expire_time || 0,
+        card: value.card || '',
+        join_time: value.join_time || 0,
+        last_active_time: value.update_time || 0,
+        level: value.level,
+        shut_up_time: value.shutup_time,
+        distance: 0,
+        honors: [],
+        unfriendly: unfriendly.unfriendly,
+        card_changeable: undefined,
+        role: value.role as Role,
+      })
+    }
+    return members
+  }
+
+  async GetGroupMemberInfo (group_id: string, target_uid_or_uin: string, refresh?: boolean) {
+    const result = this.super.pickMember(Number(group_id), Number(target_uid_or_uin), refresh)
+    return {
+      uid: target_uid_or_uin,
+      uin: target_uid_or_uin,
+      nick: result.info?.nickname || '',
+      age: result.info?.age || 0,
+      unique_title: result.title || '',
+      unique_title_expire_time: result.info?.title_expire_time || 0,
+      card: result.card || '',
+      join_time: result.info?.join_time || 0,
+      last_active_time: result.info?.update_time || 0,
+      level: result.info?.level || 0,
+      shut_up_time: result.info?.shutup_time || 0,
+      distance: 0,
+      honors: [],
+      unfriendly: result.is_friend,
+      card_changeable: undefined,
+      role: result.info?.role as Role,
+    }
+  }
+
   async GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
   async DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
   async SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
@@ -756,8 +845,6 @@ export class AdapterICQQ implements KarinAdapter {
   async GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupMemberInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupMemberList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
 
   // 以下方法暂不打算实现
