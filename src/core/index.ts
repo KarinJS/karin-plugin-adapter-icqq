@@ -1,7 +1,9 @@
 import { slider, device } from './login'
 import { CfgType } from '../imports/types'
-import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId } from '@icqqjs/icqq'
-import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType } from 'node-karin'
+import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId, axios } from '@icqqjs/icqq'
+import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType, GroupMemberInfo, GroupInfo, PushMessageBody, FriendInfo, GroupHonorInfo, EssenceMessageBody, GetRemainCountAtAllResponse } from 'node-karin'
+import { parseGroupRequestFlag } from '@icqqjs/icqq/lib/internal'
+import { uuid } from '@icqqjs/icqq/lib/common'
 
 /**
  * - ICQQ适配器
@@ -812,40 +814,377 @@ export class AdapterICQQ implements KarinAdapter {
     return members
   }
 
-  async GetGroupMemberInfo (group_id: string, target_uid_or_uin: string, refresh?: boolean) {
-    const result = this.super.pickMember(Number(group_id), Number(target_uid_or_uin), refresh)
+  async GetGroupMemberInfo (group_id: string, target_uid_or_uin: string, refresh?: boolean): Promise<GroupMemberInfo> {
+    const result = await this.super.getGroupMemberInfo(Number(group_id), Number(target_uid_or_uin), refresh)
     return {
       uid: target_uid_or_uin,
       uin: target_uid_or_uin,
-      nick: result.info?.nickname || '',
-      age: result.info?.age || 0,
+      nick: result.nickname || '',
+      age: result.age || 0,
       unique_title: result.title || '',
-      unique_title_expire_time: result.info?.title_expire_time || 0,
+      unique_title_expire_time: result.title_expire_time || 0,
       card: result.card || '',
-      join_time: result.info?.join_time || 0,
-      last_active_time: result.info?.update_time || 0,
-      level: result.info?.level || 0,
-      shut_up_time: result.info?.shutup_time || 0,
+      join_time: result.join_time || 0,
+      last_active_time: result.update_time || 0,
+      level: result.level || 0,
+      shut_up_time: result.shutup_time || 0,
       distance: 0,
       honors: [],
-      unfriendly: result.is_friend,
+      unfriendly: !!this.super.fl.get(Number(target_uid_or_uin)),
       card_changeable: undefined,
-      role: result.info?.role as Role,
+      role: result.role as Role,
     }
   }
 
-  async GetEssenceMessageList (): Promise<any> { throw new Error('Method not implemented.') }
-  async DownloadForwardMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetFriendApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetGroupApplyResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetInvitedJoinGroupResult (): Promise<any> { throw new Error('Method not implemented.') }
-  async SendMessageByResId (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetHistoryMessage (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetStrangerProfileCard (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetFriendList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetGroupHonor (): Promise<any> { throw new Error('Method not implemented.') }
+  async GetGroupInfo (group_id: string, no_cache?: boolean): Promise<GroupInfo> {
+    const result = await this.super.getGroupInfo(Number(group_id), no_cache)
+
+    /** 从群成员中提取出所有管理 */
+    const admins = []
+    const gl = await this.super.getGroupMemberList(Number(group_id), no_cache)
+    for (const [key, value] of gl.entries()) {
+      if (value.role === 'admin') admins.push(key + '')
+    }
+
+    return {
+      group_id,
+      group_name: result.group_name,
+      group_remark: result.group_name,
+      max_member_count: result.max_member_count,
+      member_count: result.member_count,
+      group_uin: group_id,
+      admins,
+      owner: result.owner_id + '',
+    }
+  }
+
+  async DownloadForwardMessage (res_id: string): Promise<Array<PushMessageBody>> {
+    const result = await this.super.getForwardMsg(res_id)
+    const messages: Array<PushMessageBody> = []
+
+    await Promise.all(result.map(async v => {
+      const elements = await this.AdapterConvertKarin(v.message)
+      messages.push({
+        elements,
+        time: v.time,
+        message_id: '',
+        message_seq: v.seq,
+        sender: {
+          uid: v.user_id + '',
+          uin: v.user_id + '',
+          nick: v.nickname || '',
+          role: Role.Unknown,
+        },
+        contact: {
+          scene: v.group_id ? Scene.Group : Scene.Private,
+          peer: v.group_id + '' || v.user_id + '',
+          sub_peer: '',
+        },
+      })
+    }))
+
+    return messages
+  }
+
+  async SetFriendApplyResult (request_id: string, is_approve: boolean, remark?: string) {
+    return await this.super.setFriendAddRequest(request_id, is_approve, remark)
+  }
+
+  async SetGroupApplyResult (request_id: string, is_approve: boolean, deny_reason?: string) {
+    return await this.super.setGroupAddRequest(request_id, is_approve, deny_reason)
+  }
+
+  async SetInvitedJoinGroupResult (request_id: string, is_approve: boolean) {
+    const { group_id, user_id, seq } = parseGroupRequestFlag(request_id)
+    return await this.super.pickUser(Number(user_id)).setGroupInvite(group_id, seq, is_approve)
+  }
+
+  async GetGroupList (refresh?: boolean): Promise<Array<GroupInfo>> {
+    const list = []
+    const result = this.super.getGroupList()
+    if (refresh) await this.super.reloadGroupList()
+    for (const [key, value] of result.entries()) {
+      const admins = []
+
+      const gl = await this.super.getGroupMemberList(Number(key), refresh)
+      for (const [key, value] of gl.entries()) {
+        if (value.role === 'admin') admins.push(key + '')
+      }
+
+      list.push({
+        group_id: key + '',
+        group_name: value.group_name,
+        group_remark: value.group_name,
+        max_member_count: value.max_member_count,
+        member_count: value.member_count,
+        group_uin: key + '',
+        admins,
+        owner: value.owner_id + '',
+      })
+    }
+
+    return list
+  }
+
+  async GetFriendList (refresh?: boolean): Promise<Array<FriendInfo>> {
+    const list: Array<FriendInfo> = []
+    if (refresh) await this.super.reloadFriendList()
+    const result = this.super.getFriendList()
+
+    for (const [key, value] of result.entries()) {
+      list.push({
+        uid: key + '',
+        uin: key + '',
+        qid: key + '',
+        nick: value.nickname,
+        remark: value.remark,
+        sex: value.sex,
+        level: undefined,
+        birthday: undefined,
+        login_day: undefined,
+        vote_cnt: undefined,
+        is_school_verified: undefined,
+        age: undefined,
+        ext: {
+          big_vip: undefined,
+          hollywood_vip: undefined,
+          qq_vip: undefined,
+          super_vip: undefined,
+          voted: undefined,
+        },
+      })
+    }
+
+    return list
+  }
+
+  async SendMessageByResId (contact: Contact, res_id: string): Promise<{ message_id: string, message_time: number }> {
+    const isPrivate = contact.scene === Scene.Private
+    const isNewVersion = this.version.name === '@icqqjs/icqq'
+
+    const sendMsg = async (peerId: number, msg: any) => {
+      const sendMethod = isPrivate ? this.super.pickFriend(peerId) : this.super.pickGroup(peerId)
+      const res = await sendMethod.sendMsg(msg)
+      return { message_id: res.message_id, message_time: res.time }
+    }
+
+    if (isNewVersion) {
+      /** 新版本走长消息发送 */
+      const msg = { type: 'long_msg', resid: res_id }
+      return sendMsg(Number(contact.peer), msg)
+    }
+
+    /** 旧版本重新构建json发送 */
+    const result = await this.super.getForwardMsg(res_id)
+    const json = {
+      app: 'com.tencent.multimsg',
+      config: { autosize: 1, forward: 1, round: 1, type: 'normal', width: 300 },
+      desc: '[聊天记录]',
+      extra: '',
+      meta: {
+        detail: {
+          news: [{ text: `${result[0].nickname}: 点击查看` }],
+          resid: res_id,
+          source: '群聊的聊天记录',
+          summary: `查看${result.length}条转发消息`,
+          uniseq: uuid().toUpperCase(),
+        },
+      },
+      prompt: '[聊天记录]',
+      ver: '0.0.0.5',
+      view: 'contact',
+    }
+    return sendMsg(Number(contact.peer), Segment.json(json))
+  }
+
+  async GetStrangerProfileCard (target_uid_or_uin: string[]): Promise<Array<FriendInfo>> {
+    const info = await this.super.getStrangerInfo(Number(target_uid_or_uin[0]))
+    return [
+      {
+        uid: info.user_id + '',
+        uin: info.user_id + '',
+        qid: info.user_id + '',
+        nick: info.nickname,
+        sex: info.sex,
+        remark: undefined,
+        level: undefined,
+        birthday: undefined,
+        login_day: undefined,
+        vote_cnt: undefined,
+        is_school_verified: undefined,
+        age: undefined,
+        ext: {
+          big_vip: undefined,
+          hollywood_vip: undefined,
+          qq_vip: undefined,
+          super_vip: undefined,
+          voted: undefined,
+        },
+      },
+    ]
+  }
+
+  async GetHistoryMessage (contact: Contact, start_message_id: string, count: number = 20): Promise<Array<PushMessageBody>> {
+    const list: Array<PushMessageBody> = []
+    const result = await this.super.getChatHistory(start_message_id, count)
+    for (const v of result) {
+      const elements = await this.AdapterConvertKarin(v.message)
+      list.push({
+        elements,
+        time: v.time,
+        message_id: v.message_id,
+        message_seq: v.seq,
+        sender: {
+          uid: v.sender.user_id + '',
+          uin: v.sender.user_id + '',
+          nick: v.sender.nickname || '',
+          role: Role.Unknown,
+        },
+        contact: {
+          scene: contact.scene,
+          peer: contact.scene === Scene.Private ? v.sender.user_id + '' : contact.peer,
+          sub_peer: '',
+        },
+      })
+    }
+
+    return list
+  }
+
+  async GetGroupHonor (group_id: string, refresh?: boolean): Promise<Array<GroupHonorInfo>> {
+    const list: Array<GroupHonorInfo> = []
+
+    const api = async (type: number) => {
+      const Cookie = this.super.cookies['qun.qq.com']
+      const url = `https://qun.qq.com/interactive/honorlist?gc=${group_id}&type=${type}`
+      const result = await axios.get(url, { headers: { Cookie } })
+      const text = result.data.match(/window\.__INITIAL_STATE__=(.*?);/)[1].replace(/\\/g, '\\\\')
+      const data = JSON.parse(text)
+      return type === 1 ? data.talkativeList : data.actorList
+    }
+
+    /** 龙王 */
+    const king = await api(1)
+    list.push({
+      uid: king.uin + '',
+      uin: king.uin + '',
+      nick: king.name,
+      honor_name: '龙王',
+      avatar: king.avatar,
+      id: 1,
+      description: king.desc,
+    })
+
+    /** 群聊之火 */
+    const fire = await api(2)
+    list.push({
+      uid: fire.uin + '',
+      uin: fire.uin + '',
+      nick: fire.name,
+      honor_name: '群聊之火',
+      avatar: fire.avatar,
+      id: 2,
+      description: fire.desc,
+    })
+
+    /** 群聊炽焰 */
+    const flame = await api(3)
+    list.push({
+      uid: flame.uin + '',
+      uin: flame.uin + '',
+      nick: flame.name,
+      honor_name: '群聊炽焰',
+      avatar: flame.avatar,
+      id: 3,
+      description: flame.desc,
+    })
+
+    /** 快乐源泉 */
+    const spring = await api(6)
+    list.push({
+      uid: spring.uin + '',
+      uin: spring.uin + '',
+      nick: spring.name,
+      honor_name: '快乐源泉',
+      avatar: spring.avatar,
+      id: 6,
+      description: spring.desc,
+    })
+
+    return list
+  }
+
+  async GetEssenceMessageList (group_id: string, page: number, page_size: number): Promise<Array<EssenceMessageBody>> {
+    const list: Array<EssenceMessageBody> = []
+
+    /** 扒出来一个奇怪的接口。。。 */
+    const url = `https://qun.qq.com/essence/indexPc?gc=${group_id}`
+
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QQ/9.6.5.28778 Chrome/43.0.2357.134 Safari/537.36 QBCore/3.43.1298.400 QQBrowser/9.0.2524.400',
+      Host: 'qun.qq.com',
+      Cookie: this.super.cookies['qun.qq.com'],
+    }
+
+    const result = await axios.get(url, { headers })
+    const text = result.data.match(/<script>window\.__INITIAL_STATE__=(\{.*?\})<\/script>/)[1].replace(/\\/g, '\\\\')
+    const data = JSON.parse(text)
+
+    for (const v of data.msgList) {
+      list.push({
+        group_id,
+        sender_uid: v.sender_uin,
+        sender_uin: v.sender_uin,
+        sender_nick: v.sender_nick,
+        operator_uid: v.add_digest_uin,
+        operator_uin: v.add_digest_uin,
+        operator_nick: v.add_digest_nick,
+        operation_time: v.add_digest_time,
+        message_time: v.sender_time,
+        message_id: '',
+        message_seq: 0,
+        json_elements: JSON.stringify(v.msg_content),
+      })
+    }
+
+    return list
+  }
+
+  async GetRemainCountAtAll (group_id: string): Promise<GetRemainCountAtAllResponse> {
+    const res = await this.super.pickGroup(Number(group_id)).getAtAllRemainder()
+    return {
+      access_at_all: res > 0,
+      remain_count_for_group: res,
+      remain_count_for_self: 0,
+    }
+  }
+
+  async ModifyGroupRemark (group_id: string, remark: string) {
+    return await this.super.pickGroup(Number(group_id)).setRemark(remark)
+  }
+
+  async GetProhibitedUserList (group_id: string): Promise<Array<{
+    uid: string
+    uin: string
+    prohibited_time: number
+  }>> {
+    const list: Array<{ uid: string, uin: string, prohibited_time: number }> = []
+
+    /** 获取群成员列表 */
+    const members = await this.GetGroupMemberList(group_id)
+
+    for (const member of members) {
+      if (member.shut_up_time) {
+        list.push({
+          uid: member.uid,
+          uin: member.uin,
+          prohibited_time: member.shut_up_time,
+        })
+      }
+    }
+
+    return list
+  }
 
   // 以下方法暂不打算实现
   async UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
@@ -856,8 +1195,5 @@ export class AdapterICQQ implements KarinAdapter {
   async DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
   async GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
   async GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async ModifyGroupRemark (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetRemainCountAtAll (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetProhibitedUserList (): Promise<any> { throw new Error('Method not implemented.') }
   async SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
 }
