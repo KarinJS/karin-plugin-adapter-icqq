@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.2.4...v1.3.0) (2024-08-05)
+
+
+### Features
+
+* 补充绝大部分Api实现 ([6f57cda](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/6f57cda0175a2672ed07c309011be02a6539e5e2))
+
+
+### Bug Fixes
+
+* 补充2个api ([8c7b008](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/8c7b0082dbb21acee7ab009335165b07b72a4e6f))
+
 ## [1.2.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.2.3...v1.2.4) (2024-07-30)
 
 
