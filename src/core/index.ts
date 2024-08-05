@@ -2,8 +2,8 @@ import { slider, device } from './login'
 import { CfgType } from '../imports/types'
 import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId, axios } from '@icqqjs/icqq'
 import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType, GroupMemberInfo, GroupInfo, PushMessageBody, FriendInfo, GroupHonorInfo, EssenceMessageBody, GetRemainCountAtAllResponse } from 'node-karin'
-import { parseGroupRequestFlag } from '@icqqjs/icqq/lib/internal'
-import { uuid } from '@icqqjs/icqq/lib/common'
+import { parseGroupRequestFlag } from '@icqqjs/icqq/lib/internal/sysmsg.js'
+import { uuid } from '@icqqjs/icqq/lib/common.js'
 
 /**
  * - ICQQ适配器
