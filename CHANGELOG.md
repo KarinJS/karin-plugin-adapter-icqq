@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.3...v1.3.4) (2024-08-09)
+
+
+### Bug Fixes
+
+* dirname error ([66eacac](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/66eacace6a3acfdd0310b121b71772a0bc9f07bd))
+
 ## [1.3.3](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.2...v1.3.3) (2024-08-09)
 
 
