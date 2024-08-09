@@ -9,7 +9,7 @@
 <summary>无token版本</summary>
 
 ```bash
-pnpm add karin-plugin-adapter-icqq-old -w
+pnpm add @karinjs/adapter-icqq-old -w
 ```
 
 </details>
@@ -34,14 +34,14 @@ npm login --scope=@icqqjs --auth-type=legacy --registry=https://npm.pkg.github.c
 # 回车，根据提示登录github
 
 UserName: # 你的github账号 请填写小写
-Password: # 前往 https://github.com/settings/tokens/new  获取，scopes勾选 read:packages 
+Password: # 前往 https://github.com/settings/tokens/new  获取，scopes勾选 read:packages
 E-Mail: # 你的公开邮箱地址
 ```
 
 3. 安装插件
 
 ```bash
-pnpm add karin-plugin-adapter-icqq -w
+pnpm add @karinjs/adapter-icqq -w
 ```
 
 </details>
@@ -56,7 +56,7 @@ pnpm add karin-plugin-adapter-icqq -w
 node .
 ```
 
-打开 `config/plugin/karin-plugin-adapter-icqq` 文件夹，创建`config.yaml`文件，填入以下内容
+打开 `config/plugin/@karinjs/adapter-icqq` 文件夹，创建`config.yaml`文件，填入以下内容
 
 ```yaml
 # 默认签名服务器地址

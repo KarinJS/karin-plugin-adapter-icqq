@@ -14,7 +14,6 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: karin-plugin-adapter-icqq
           default-branch: main
       # 检出代码
       - uses: actions/checkout@v4

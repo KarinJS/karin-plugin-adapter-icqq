@@ -4,7 +4,7 @@ const pkg = JSON.parse(fs.readFileSync(file, 'utf8'))
 
 pkg.dependencies.icqq = 'latest'
 delete pkg.dependencies['@icqqjs/icqq']
-pkg.name = 'karin-plugin-adapter-icqq-old'
+pkg.name = '@karinjs/adapter-icqq-old'
 
 fs.writeFileSync(file, JSON.stringify(pkg, null, 2), 'utf8')
 
