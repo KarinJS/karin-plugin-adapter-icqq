@@ -544,8 +544,7 @@ export class AdapterICQQ implements KarinAdapter {
           // elements.push({ type: 'forward', data: { id: i.res_id } })
           break
         }
-        case 'record':
-        case 'voice': {
+        case 'record': {
           elements.push(Segment.record(i.file))
           // elements.push({ type: 'record', data: { file: i.file, magic: i.magic || false } })
           break
@@ -594,7 +593,7 @@ export class AdapterICQQ implements KarinAdapter {
           break
         }
         case 'button':
-        case 'rows':
+        case 'keyboard':
         case 'bubble_face':
         case 'contact':
         case 'gift':
