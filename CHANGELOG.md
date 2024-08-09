@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.1...v1.3.2) (2024-08-09)
+
+
+### Bug Fixes
+
+* 统一包名风格 ([5e3734a](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/5e3734ac04f5c5065630977e9c5cdc5c0ae745ee))
+
 ## [1.3.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.0...v1.3.1) (2024-08-05)
 
 
