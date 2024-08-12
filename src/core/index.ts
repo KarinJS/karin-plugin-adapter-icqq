@@ -335,7 +335,7 @@ export class AdapterICQQ implements KarinAdapter {
       const event_id = `notice.${user_id}.${time}`
 
       const contact = {
-        scene: Scene.Group,
+        scene: Scene.Private,
         peer: user_id,
         sub_peer: user_id,
       }
