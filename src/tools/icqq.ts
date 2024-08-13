@@ -11,8 +11,8 @@ fs.writeFileSync(file, JSON.stringify(pkg, null, 2), 'utf8')
 // 修改 src/code/index.ts 中的 import @icqqjs/icqq 为 import icqq
 const ts = './lib/core/index.js'
 const code = fs.readFileSync(ts, 'utf8')
-fs.writeFileSync(ts, code.replace('@icqqjs/icqq', 'icqq'), 'utf8')
+fs.writeFileSync(ts, code.replace(/@icqqjs\/icqq/gm, 'icqq'), 'utf8')
 
 const ts1 = './lib/index.js'
 const code1 = fs.readFileSync(ts1, 'utf8')
-fs.writeFileSync(ts1, code1.replace('@icqqjs/icqq', 'icqq'), 'utf8')
+fs.writeFileSync(ts1, code1.replace(/@icqqjs\/icqq/gm, 'icqq'), 'utf8')
