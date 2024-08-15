@@ -18,11 +18,8 @@ jobs:
       with:
         node-version: '20'
 
-    - name: 安装依赖
-      run: npm install
-
-    - name: 添加node-karin开发依赖
-      run: npm install node-karin@latest --save-dev
+    - name: 添加node-karin开发依赖 并安装依赖
+      run: npm install node-karin@latest --save-dev && npm install
 
     - name: 编译输出
       run: npm run build
