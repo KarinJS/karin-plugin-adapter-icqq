@@ -90,7 +90,7 @@ export class AdapterICQQ implements KarinAdapter {
         return data.reply(message)
       }
 
-      listener.emit('message', e)
+      listener.emit('adapter.message', e)
     })
 
     this.super.on('notice.group', async data => {
@@ -324,7 +324,7 @@ export class AdapterICQQ implements KarinAdapter {
         return await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
       }
 
-      listener.emit('notice', notice)
+      listener.emit('adapter.notice', notice)
     })
 
     this.super.on('notice.friend', async data => {
@@ -418,7 +418,7 @@ export class AdapterICQQ implements KarinAdapter {
         return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
       }
 
-      listener.emit('notice', notice)
+      listener.emit('adapter.notice', notice)
     })
 
     /** 遇到滑动验证码(滑块) */
