@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.7](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.6...v1.3.7) (2024-08-16)
+
+
+### Bug Fixes
+
+* ci ([118f478](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/118f4780020f5df70cb7fcfa365944db3596eb40))
+* install ([d68747e](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/d68747e6850b6df270f0d99ee092f51670d96a13))
+* 跟随上游更新 ([96be714](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/96be71428b5b8ddc62f26a7f35773923f2b4f57f))
+
 ## [1.3.6](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.5...v1.3.6) (2024-08-13)
 
 
