@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.8](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.7...v1.3.8) (2024-08-25)
+
+
+### Bug Fixes
+
+* getGroupAvatarUrl name ([d63bd1b](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/d63bd1b2ad6735d5a738c582f457fd94d7102e87))
+
 ## [1.3.7](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.6...v1.3.7) (2024-08-16)
 
 
