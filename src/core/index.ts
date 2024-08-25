@@ -642,7 +642,7 @@ export class AdapterICQQ implements KarinAdapter {
    * @param history 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns 头像的url地址
    */
-  getGroupAvatar (group_id: string, size: 0 | 40 | 100 | 140 = 0, history = 0) {
+  getGroupAvatarUrl (group_id: string, size: 0 | 40 | 100 | 140 = 0, history = 0) {
     return `https://p.qlogo.cn/gh/${group_id}/${group_id}${history ? '_' + history : ''}/` + size
   }
 
