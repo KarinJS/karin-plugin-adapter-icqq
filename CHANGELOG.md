@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.9](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.8...v1.3.9) (2024-09-12)
+
+
+### Bug Fixes
+
+* 扫码登录 ([820ed35](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/820ed3590440e42ee27d4bc696c3f30d34929825))
+
 ## [1.3.8](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.7...v1.3.8) (2024-08-25)
 
 
