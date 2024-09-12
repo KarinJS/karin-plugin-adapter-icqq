@@ -1,4 +1,4 @@
-import { slider, device } from './login'
+import { slider, device, qrcode } from './login'
 import { CfgType } from '../imports/types'
 import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId, axios } from '@icqqjs/icqq'
 import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType, GroupMemberInfo, GroupInfo, PushMessageBody, FriendInfo, GroupHonorInfo, EssenceMessageBody, GetRemainCountAtAllResponse } from 'node-karin'
@@ -421,6 +421,9 @@ export class AdapterICQQ implements KarinAdapter {
       listener.emit('adapter.notice', notice)
     })
 
+    /** 扫码登录 */
+    this.super.on('system.login.qrcode', event => qrcode(event.image, this))
+
     /** 遇到滑动验证码(滑块) */
     this.super.on('system.login.slider', event => slider(event.url, this))
 
@@ -590,6 +593,10 @@ export class AdapterICQQ implements KarinAdapter {
         }
         case 'share': {
           elements.push(Segment.share(i.url, i.title, i.content, i.image))
+          break
+        }
+        case 'raw': {
+          elements.push(i.data)
           break
         }
         case 'button':

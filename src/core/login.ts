@@ -47,6 +47,21 @@ export async function slider (url: string, adapter: AdapterICQQ) {
 }
 
 /**
+ * 扫码登录
+ * @param image 二维码图片
+ * @param adapter 适配器实例
+ */
+export async function qrcode (image: Buffer, adapter: AdapterICQQ) {
+  /** 停止监听 */
+  process.stdin.emit('stdin.close')
+  /** 监听一次回车 */
+  await input({ message: '请扫码登录后按回车键继续...' })
+  /** 重新监听 */
+  process.stdin.emit('stdin.open')
+  await adapter.super.login()
+}
+
+/**
  * 自动过滑块
  * 由hlhs授权提供，感谢大佬的支持~ https://gitee.com/Mozz2020
  */
