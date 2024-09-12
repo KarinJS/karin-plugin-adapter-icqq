@@ -4,6 +4,7 @@
 
 > [!IMPORTANT]
 > 如果不知道什么是`token` 那就安装`无token`版本即可
+> 如果没有`token`，更建议使用其他协议
 
 <details>
 <summary>无token版本</summary>
