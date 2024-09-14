@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.11](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.10...v1.3.11) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正群聊场景识别错误 ([56372e3](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/56372e3ecc481fc73d906b02dd04cc656ae136aa))
+
 ## [1.3.10](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.9...v1.3.10) (2024-09-12)
 
 
