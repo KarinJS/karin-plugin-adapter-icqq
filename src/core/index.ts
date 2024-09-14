@@ -1139,6 +1139,8 @@ export class AdapterICQQ implements KarinAdapter {
     const data = JSON.parse(text)
 
     for (const v of data.msgList) {
+      /** 组合message_id */
+      const message_id = genGroupMessageId(Number(group_id), Number(v.sender_uin), v.msg_seq, v.msg_random, v.sender_time)
       list.push({
         group_id,
         sender_uid: v.sender_uin,
@@ -1149,8 +1151,8 @@ export class AdapterICQQ implements KarinAdapter {
         operator_nick: v.add_digest_nick,
         operation_time: v.add_digest_time,
         message_time: v.sender_time,
-        message_id: '',
-        message_seq: 0,
+        message_id,
+        message_seq: v.msg_seq,
         json_elements: JSON.stringify(v.msg_content),
       })
     }
