@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.13](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.12...v1.3.13) (2024-09-14)
+
+
+### Bug Fixes
+
+* 更换接口为官方精华接口 ([fcd51ea](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/fcd51ea86216dfd1f8277241a97e008ffbd76fd8))
+
 ## [1.3.12](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.11...v1.3.12) (2024-09-14)
 
 
