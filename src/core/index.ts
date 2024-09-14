@@ -1122,23 +1122,33 @@ export class AdapterICQQ implements KarinAdapter {
     return list
   }
 
-  async GetEssenceMessageList (group_id: string, page: number, page_size: number): Promise<Array<EssenceMessageBody>> {
+  async GetEssenceMessageList (group_id: string, page: number = 0, page_size: number = 20): Promise<Array<EssenceMessageBody>> {
+    if (page_size > 50) page_size = 50
+
     const list: Array<EssenceMessageBody> = []
 
-    /** 扒出来一个奇怪的接口。。。 */
-    const url = `https://qun.qq.com/essence/indexPc?gc=${group_id}`
+    const random = Math.floor(Math.random() * 10000)
+    const url = `https://qun.qq.com/cgi-bin/group_digest/digest_list?random=${random}&X-CROSS-ORIGIN=fetch&group_code=${group_id}&page_start=${page}&page_limit=${page_size}&bkn=${this.super.bkn}`
 
     const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QQ/9.6.5.28778 Chrome/43.0.2357.134 Safari/537.36 QBCore/3.43.1298.400 QQBrowser/9.0.2524.400',
       Host: 'qun.qq.com',
+      'User-Agent': 'QQ/8.9.28.635 CFNetwork/1312 Darwin/21.0.0',
+      Connection: 'keep-alive',
+      Accept: 'application/json, text/plain, */*',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Accept-Language': 'zh-CN',
       Cookie: this.super.cookies['qun.qq.com'],
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'cross-site',
+      'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
     }
 
     const result = await axios.get(url, { headers })
-    const text = result.data.match(/<script>window\.__INITIAL_STATE__=(\{.*?\})<\/script>/)[1].replace(/\\/g, '\\\\')
-    const data = JSON.parse(text)
 
-    for (const v of data.msgList) {
+    for (const v of result.data.data?.msg_list || []) {
       /** 组合message_id */
       const message_id = genGroupMessageId(Number(group_id), Number(v.sender_uin), v.msg_seq, v.msg_random, v.sender_time)
       list.push({
