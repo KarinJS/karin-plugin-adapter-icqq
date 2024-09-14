@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.12](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.11...v1.3.12) (2024-09-14)
+
+
+### Bug Fixes
+
+* 修正精华消息不返回message_id ([7e79427](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/7e79427b8b5f0e7c159004cf781a2449d437dbed))
+
 ## [1.3.11](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.10...v1.3.11) (2024-09-14)
 
 
