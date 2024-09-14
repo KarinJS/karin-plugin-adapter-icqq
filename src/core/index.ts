@@ -53,27 +53,29 @@ export class AdapterICQQ implements KarinAdapter {
         elements.unshift(segment.reply(message_id))
       }
 
+      const user_id = data.sender.user_id + ''
+
       const message = {
         event: EventType.Message as EventType.Message,
         raw_event: data,
-        sub_event: data.sub_type === 'group' ? MessageSubType.GroupMessage : MessageSubType.PrivateMessage,
+        sub_event: data.sub_type === 'normal' ? MessageSubType.GroupMessage : MessageSubType.PrivateMessage,
         event_id: data.message_id + '',
         self_id: this.account.uid + '',
-        user_id: data.sender.user_id + '',
+        user_id,
         time: data.time,
         message_id: data.message_id + '',
         message_seq: data.seq,
         sender: {
           ...data.sender,
-          uid: data.sender.user_id + '',
-          uin: data.sender.user_id + '',
+          uid: user_id,
+          uin: user_id,
           nick: data.sender.nickname || '',
           role: 'role' in data.sender ? data.sender.role as Role || Role.Unknown : Role.Unknown,
         },
         elements,
         contact: {
           scene: data.message_type === 'private' ? Scene.Private : Scene.Group,
-          peer: data.message_type === 'private' ? data.sender.user_id + '' : data.group_id + '',
+          peer: data.message_type === 'private' ? user_id : data.group_id + '',
           sub_peer: '',
         },
         group_id: data.message_type === 'group' ? data.group_id + '' : '',
