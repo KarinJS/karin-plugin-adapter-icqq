@@ -76,7 +76,7 @@ export class AdapterICQQ implements KarinAdapter {
         contact: {
           scene: data.message_type === 'private' ? Scene.Private : Scene.Group,
           peer: data.message_type === 'private' ? user_id : data.group_id + '',
-          sub_peer: '',
+          sub_peer: null,
         },
         group_id: data.message_type === 'group' ? data.group_id + '' : '',
         raw_message: '',
@@ -106,7 +106,7 @@ export class AdapterICQQ implements KarinAdapter {
       const contact = {
         scene: Scene.Group,
         peer: group_id,
-        sub_peer: group_id,
+        sub_peer: null,
       }
 
       const sender = {
@@ -339,7 +339,7 @@ export class AdapterICQQ implements KarinAdapter {
       const contact = {
         scene: Scene.Private,
         peer: user_id,
-        sub_peer: user_id,
+        sub_peer: null,
       }
 
       const sender = {
@@ -467,7 +467,7 @@ export class AdapterICQQ implements KarinAdapter {
           break
         case 'video': {
           const url = await this.super.getVideoUrl(i.fid as string, i.md5 as string)
-          elements.push(segment.video(url, i.md5 as string, i.name || ''))
+          elements.push(segment.video(url!, i.md5 as string, i.name || ''))
           break
         }
         case 'at': {
@@ -886,7 +886,7 @@ export class AdapterICQQ implements KarinAdapter {
         contact: {
           scene: v.group_id ? Scene.Group : Scene.Private,
           peer: v.group_id + '' || v.user_id + '',
-          sub_peer: '',
+          sub_peer: null,
         },
       })
     }))
@@ -1051,7 +1051,7 @@ export class AdapterICQQ implements KarinAdapter {
         contact: {
           scene: contact.scene,
           peer: contact.scene === Scene.Private ? v.sender.user_id + '' : contact.peer,
-          sub_peer: '',
+          sub_peer: null,
         },
       })
     }

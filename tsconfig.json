@@ -23,7 +23,8 @@
     "resolveFullExtension": ".js"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/qq.ts"
   ],
   "exclude": [
     "node_modules"
