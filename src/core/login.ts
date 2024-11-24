@@ -67,7 +67,7 @@ export async function qrcode (image: Buffer, adapter: AdapterICQQ) {
  */
 export async function autoSlider (uid: string, url: string): Promise<string> {
   // 用户访问url
-  const page = `https://hlhs-nb.cn/captcha/slider?key=${uid}`
+  const page = `https://hanxuan-gt.hf.space/captcha/slider?key=${uid}`
   const socket = new WebSocket(page)
   socket.on('error', () => logger.error('websocket连接失败，请检查你的dns设置或者网络是否正常'))
   socket.on('open', () => {
