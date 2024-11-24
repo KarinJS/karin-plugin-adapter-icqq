@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.14](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.13...v1.3.14) (2024-11-24)
+
+
+### Bug Fixes
+
+* build ([0e2253a](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/0e2253afa2a873eac67575f7fc9eebb7f94aa532))
+* 更改自动ticket链接 ([b558bad](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/b558bad0e7439490fb37467f7d3119c6dfebaf64))
+
 ## [1.3.13](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.12...v1.3.13) (2024-09-14)
 
 
