@@ -6,12 +6,18 @@
   "author": "karin",
   "type": "module",
   "main": "./lib/index.js",
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
-    "fix": "eslint lib/**/*.js --fix",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "icqq": "node lib/tools/icqq.js",
     "pub": "npm publish --access public",
-    "sort": "sort-package-json",
-    "icqq": "node lib/tools/icqq.js"
+    "sort": "sort-package-json"
   },
   "dependencies": {
     "@icqqjs/icqq": "latest",
@@ -37,12 +43,5 @@
   "karin": {
     "apps": [],
     "outDir": "lib"
-  },
-  "files": [
-    "/lib/**/*.js",
-    "/lib/**/*.d.ts",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ]
+  }
 }
