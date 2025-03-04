@@ -1,6 +1,6 @@
 import { Agent } from 'https'
 import { AdapterICQQ } from './index'
-import { listener, logger } from 'node-karin'
+import { logger } from 'node-karin'
 import { input, select } from '@inquirer/prompts'
 import axios from 'node-karin/axios'
 import WebSocket from 'node-karin/ws'

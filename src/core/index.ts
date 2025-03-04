@@ -1,24 +1,52 @@
 import { slider, device, qrcode } from './login'
 import { CfgType } from '../imports/types'
-import { Client, MessageElem, segment as Segment, parseGroupMessageId, genGroupMessageId, genDmMessageId, axios } from '@icqqjs/icqq'
-import { listener, KarinMessage, KarinAdapter, Contact, KarinElement, logger, segment, Role, KarinNotice, NoticeType, NodeElement, MessageSubType, EventType, Scene, NoticeSubType, GroupMemberInfo, GroupInfo, PushMessageBody, FriendInfo, GroupHonorInfo, EssenceMessageBody, GetRemainCountAtAllResponse } from 'node-karin'
-import { parseGroupRequestFlag } from '@icqqjs/icqq/lib/internal/sysmsg.js'
-import { uuid } from '@icqqjs/icqq/lib/common.js'
+import {
+  Client,
+  MessageElem,
+  segment as Segment,
+  parseGroupMessageId,
+  genGroupMessageId,
+  axios,
+  GroupMessage,
+  PrivateMessage
+} from 'icqq'
+import {
+  registerBot,
+  Contact,
+  logger,
+  Role,
+  NodeElement,
+  Scene,
+  GroupInfo,
+  AdapterType,
+  AdapterBase,
+  unregisterBot,
+  Elements
+} from 'node-karin'
+import { parseGroupRequestFlag } from 'icqq/lib/internal/sysmsg.js'
+import { createMessage } from '../create/message'
+import { createNoice } from 'src/create/notice'
+import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 
 /**
  * - ICQQ适配器
  */
-export class AdapterICQQ implements KarinAdapter {
-  socket!: WebSocket
-  account: KarinAdapter['account']
-  adapter: KarinAdapter['adapter']
-  version: KarinAdapter['version']
-  super: Client
-  constructor (bot: CfgType, name: string, version: string) {
-    const self_id = String(bot.qq)
-    this.account = { uid: self_id, uin: self_id, name: '' }
-    this.adapter = { id: 'QQ', name: 'ICQQ', type: 'internal', sub_type: 'internal', start_time: Date.now(), connect: '', index: 0 }
-    this.version = { name, app_name: name, version }
+export class AdapterICQQ extends AdapterBase implements AdapterType {
+  constructor (bot: CfgType, version: string) {
+    super()
+    const selfId = String(bot.qq)
+    this.account.uid = selfId
+    this.account.uin = selfId
+    this.account.name = ''
+    this.account.selfId = selfId
+    this.account.avatar = ''
+    this.adapter.name = 'ICQQ'
+    this.adapter.index = 0
+    this.adapter.version = version
+    this.adapter.platform = 'qq'
+    this.adapter.standard = 'icqq'
+    this.adapter.protocol = 'icqq'
+    this.adapter.communication = 'other'
     this.super = new Client(bot.cfg)
   }
 
@@ -27,413 +55,34 @@ export class AdapterICQQ implements KarinAdapter {
       this.logger('info', '登录成功~')
       this.account.name = this.super.nickname
       /** 注册bot */
-      const index = listener.addBot({ bot: this, type: this.adapter.type })
+      const index = registerBot('other', this)
       if (index) this.adapter.index = index
     })
 
     /** 监听掉线 掉线后卸载bot */
     this.super.on('system.offline', () => {
-      listener.delBot(this.adapter.index)
+      unregisterBot('index', this.adapter.index)
     })
 
-    this.super.on('message', async data => {
-      if ('discuss' in data) return
-      const elements = await this.AdapterConvertKarin(data.message)
-
-      /** 引用回复 */
-      if (data.source) {
-        /** 构建message_id */
-        let message_id = ''
-        if (data.message_type === 'group') {
-          message_id = genGroupMessageId(data.group_id, data.source.user_id, data.source.seq, data.rand, data.source.time)
-        } else {
-          message_id = genDmMessageId(data.source.user_id, data.source.seq, data.rand, data.source.time)
-        }
-
-        elements.unshift(segment.reply(message_id))
-      }
-
-      const user_id = data.sender.user_id + ''
-
-      const message = {
-        event: EventType.Message as EventType.Message,
-        raw_event: data,
-        sub_event: data.sub_type === 'normal' ? MessageSubType.GroupMessage : MessageSubType.PrivateMessage,
-        event_id: data.message_id + '',
-        self_id: this.account.uid + '',
-        user_id,
-        time: data.time,
-        message_id: data.message_id + '',
-        message_seq: data.seq,
-        sender: {
-          ...data.sender,
-          uid: user_id,
-          uin: user_id,
-          nick: data.sender.nickname || '',
-          role: 'role' in data.sender ? data.sender.role as Role || Role.Unknown : Role.Unknown,
-        },
-        elements,
-        contact: {
-          scene: data.message_type === 'private' ? Scene.Private : Scene.Group,
-          peer: data.message_type === 'private' ? user_id : data.group_id + '',
-          sub_peer: null,
-        },
-        group_id: data.message_type === 'group' ? data.group_id + '' : '',
-        raw_message: '',
-      }
-
-      const e = new KarinMessage(message)
-      e.bot = this
-      /**
-       * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-       */
-      e.replyCallback = async elements => {
-        const message = await this.KarinConvertAdapter(elements)
-        return data.reply(message)
-      }
-
-      listener.emit('adapter.message', e)
+    this.super.on('message', async (data: any) => {
+      createMessage(data, this)
     })
 
-    this.super.on('notice.group', async data => {
-      let notice: KarinNotice
-      const self_id = this.account.uid
-      const time = Date.now()
-      const user_id = data.user_id + ''
-      const event_id = `notice.${user_id}.${time}`
-      const group_id = data.group_id + ''
-
-      const contact = {
-        scene: Scene.Group,
-        peer: group_id,
-        sub_peer: null,
-      }
-
-      const sender = {
-        uid: user_id,
-        uin: user_id,
-        nick: '',
-        role: Role.Unknown,
-      }
-
-      switch (data.sub_type) {
-        case 'sign': {
-          sender.nick = data.nickname
-          const content = {
-            group_id,
-            target_uid: data.user_id + '',
-            target_uin: data.user_id + '',
-            action: data.sign_text,
-            rank_image: '',
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            sub_event: NoticeSubType.GroupSignIn,
-            group_id,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'increase': {
-          const content = {
-            group_id: data.group_id + '',
-            operator_uid: '', // icqq没有提供操作者信息
-            operator_uin: '',
-            target_uid: user_id,
-            target_uin: user_id,
-            type: 'invite' as NoticeType['group_member_increase']['type'],
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            sub_event: NoticeSubType.GroupMemberIncrease,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'decrease': {
-          let type = '' as NoticeType['group_member_decrease']['type']
-          /** 如果操作号跟user_id一致 主动退群 */
-          if (data.operator_id === data.user_id) {
-            type = 'leave'
-          } else if (user_id === self_id) {
-            /** 登录号被踢 */
-            type = 'kick_me'
-          } else {
-            /** 被踢出 */
-            type = 'kick'
-          }
-
-          const operator_id = data.operator_id + ''
-
-          const content = {
-            group_id,
-            operator_uid: operator_id,
-            operator_uin: operator_id,
-            target_uid: user_id,
-            target_uin: user_id,
-            type,
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            group_id,
-            sub_event: NoticeSubType.GroupMemberDecrease,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'recall': {
-          const operator_id = data.operator_id + ''
-          const content = {
-            group_id,
-            operator_uid: operator_id,
-            operator_uin: operator_id,
-            target_uid: user_id,
-            target_uin: user_id,
-            message_id: data.message_id,
-            tip_text: '撤回了一条消息',
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            group_id,
-            sub_event: NoticeSubType.GroupRecall,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'poke': {
-          const operator_id = data.operator_id + ''
-          const target_id = data.target_id + ''
-          const content = {
-            group_id,
-            operator_uid: operator_id,
-            operator_uin: operator_id,
-            target_uid: target_id,
-            target_uin: target_id,
-            action: data.action,
-            suffix: data.suffix,
-            action_image: '',
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            group_id,
-            sub_event: NoticeSubType.GroupPoke,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'admin': {
-          const content = {
-            group_id,
-            target_uid: user_id,
-            target_uin: user_id,
-            is_admin: data.set,
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            group_id,
-            sub_event: NoticeSubType.GroupAdminChanged,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'ban': {
-          const operator_id = data.operator_id + ''
-          const content = {
-            group_id,
-            operator_uid: operator_id,
-            operator_uin: operator_id,
-            target_uid: '', // icqq没有提供被禁言者信息
-            target_uin: '',
-            duration: data.duration,
-            type: data.sub_type,
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            group_id,
-            sub_event: NoticeSubType.GroupMemberBan,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'transfer': {
-          logger.bot('info', '群转让事件[暂未适配]: ', JSON.stringify(data))
-          return
-        }
-      }
-
-      notice.bot = this
-      /**
-       * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-       */
-      notice.replyCallback = async elements => {
-        const message = await this.KarinConvertAdapter(elements)
-        return await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
-      }
-
-      listener.emit('adapter.notice', notice)
-    })
-
-    this.super.on('notice.friend', async data => {
-      let notice: KarinNotice
-      const self_id = this.account.uid
-      const time = Date.now()
-      const user_id = data.user_id + ''
-      const event_id = `notice.${user_id}.${time}`
-
-      const contact = {
-        scene: Scene.Private,
-        peer: user_id,
-        sub_peer: null,
-      }
-
-      const sender = {
-        uid: user_id,
-        uin: user_id,
-        nick: '',
-        role: Role.Unknown,
-      }
-
-      switch (data.sub_type) {
-        case 'increase': {
-          // todo kritor没有这个事件
-          this.logger('info', `[好友添加]：${JSON.stringify(data)}`)
-          return
-        }
-        case 'decrease': {
-          // todo kritor没有这个事件
-          this.logger('info', `[好友添减少]：${JSON.stringify(data)}`)
-          return
-        }
-        case 'poke': {
-          const operator_id = data.operator_id + ''
-          const target_id = data.target_id + ''
-          const content = {
-            operator_uid: operator_id,
-            operator_uin: operator_id,
-            target_uid: target_id,
-            target_uin: target_id,
-            action: data.action,
-            suffix: data.suffix,
-            action_image: '',
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            sub_event: NoticeSubType.PrivatePoke,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-        case 'recall': {
-          const content = {
-            operator_uid: user_id,
-            operator_uin: user_id,
-            message_id: data.message_id,
-            tip_text: '撤回了一条消息',
-          }
-
-          const options = {
-            raw_event: data,
-            time,
-            self_id,
-            user_id,
-            event_id,
-            sender,
-            contact,
-            content,
-            sub_event: NoticeSubType.PrivateRecall,
-          }
-          notice = new KarinNotice(options)
-          break
-        }
-      }
-
-      notice.bot = this
-      /**
-       * 快速回复 开发者不应该使用这个方法，应该使用由karin封装过后的reply方法
-       */
-      notice.replyCallback = async elements => {
-        const message = await this.KarinConvertAdapter(elements)
-        return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
-      }
-
-      listener.emit('adapter.notice', notice)
+    this.super.on('notice.group', async (data: any) => {
+      createNoice(data, this)
     })
 
     /** 扫码登录 */
-    this.super.on('system.login.qrcode', event => qrcode(event.image, this))
+    this.super.on('system.login.qrcode', (event: { image: Buffer<ArrayBufferLike> }) => qrcode(event.image, this))
 
     /** 遇到滑动验证码(滑块) */
-    this.super.on('system.login.slider', event => slider(event.url, this))
+    this.super.on('system.login.slider', (event: { url: string }) => slider(event.url, this))
 
     /** 遇到短信验证码(包含真假设备锁) */
-    this.super.on('system.login.device', event => device(event, this))
+    this.super.on('system.login.device', (event: { url: string; phone: string }) => device(event, this))
 
     /** 遇到登录错误的信息 */
-    this.super.on('system.login.error', event => {
+    this.super.on('system.login.error', (event: { code: any; message: any }) => {
       this.logger('error', `[登录错误] 错误代码: ${event.code}`)
       this.logger('error', `[登录失败] 错误信息: ${event.message}`)
     })
@@ -445,191 +94,18 @@ export class AdapterICQQ implements KarinAdapter {
     return this.account.uid
   }
 
-  /**
-   * icqq转karin
-   * @return karin格式消息
-   * */
-  async AdapterConvertKarin (data: Array<MessageElem>): Promise<Array<KarinElement>> {
-    const elements = []
-    for (const i of data) {
-      switch (i.type) {
-        case 'text':
-          elements.push(segment.text(i.text))
-          break
-        case 'face':
-          elements.push(segment.face(i.id))
-          break
-        case 'image':
-          elements.push(segment.image(i.url || i.file.toString(), { file_type: undefined }))
-          break
-        case 'record':
-          elements.push(segment.record(i.url || i.file.toString(), false))
-          break
-        case 'video': {
-          const url = await this.super.getVideoUrl(i.fid as string, i.md5 as string)
-          elements.push(segment.video(url!, i.md5 as string, i.name || ''))
-          break
-        }
-        case 'at': {
-          const qq = String(i.qq)
-          elements.push(segment.at(qq, qq, i.text))
-          break
-        }
-        case 'poke':
-          elements.push(segment.poke(i.id, 0))
-          break
-        case 'location':
-          elements.push(segment.location(i.lat, i.lng, i.name || '', i.address || ''))
-          break
-        case 'reply':
-          elements.push(segment.reply(i.id))
-          break
-        case 'json':
-          elements.push(segment.json(i.data))
-          break
-        case 'xml':
-          elements.push(segment.xml(i.data))
-          break
-        case 'long_msg': {
-          elements.push(segment.long_msg(i.resid))
-          break
-        }
-        default: {
-          elements.push(segment.text(JSON.stringify(i)))
-        }
-      }
-    }
-    return elements
-  }
-
-  /**
-   * karin转icqq
-   * @param data karin格式消息
-   * */
-  async KarinConvertAdapter (data: Array<KarinElement>): Promise<Array<MessageElem>> {
-    const elements: Array<MessageElem> = []
-
-    for (const i of data) {
-      switch (i.type) {
-        case 'text':
-          elements.push(Segment.text(i.text))
-          break
-        case 'face':
-          elements.push(Segment.face(i.id))
-          break
-        case 'at':
-          elements.push(Segment.at(Number(i.uid), i.name))
-          break
-        case 'reply':
-          // icqq没有制作回复的api
-          elements.push({ type: 'reply', id: i.message_id })
-          break
-        case 'image': {
-          elements.push(Segment.image(i.file))
-          break
-        }
-        case 'video': {
-          elements.push(Segment.video(i.file))
-          break
-        }
-        case 'file': {
-          // 不支持通过这里发送文件
-          break
-        }
-        case 'xml': {
-          elements.push(Segment.xml(i.data))
-          break
-        }
-        case 'json': {
-          elements.push(Segment.json(i.data))
-          break
-        }
-        case 'forward': {
-          // 换专门api发送
-          // elements.push({ type: 'forward', data: { id: i.res_id } })
-          break
-        }
-        case 'record': {
-          elements.push(Segment.record(i.file))
-          // elements.push({ type: 'record', data: { file: i.file, magic: i.magic || false } })
-          break
-        }
-        case 'music': {
-          if (i.id) {
-            const typeMap = {
-              QQ: 'qq' as 'qq',
-              netease: '163' as '163',
-              custom: 'migu' as 'migu', // 随便给个值...这里不能传这个类型
-            }
-            elements.push(await Segment.music(i.id, typeMap[i.platform]))
-          } else {
-            // 这里应该修改为高清语音
-            // const { url, audio, title, author, pic } = i as unknown as CustomMusicElemen
-            // elements.push({ type: 'music', data: { type: 'custom', url, audio, title, content: author, image: pic } })
-          }
-          break
-        }
-        case 'markdown': {
-          elements.push(Segment.markdown(i.content, i.config))
-          break
-        }
-        case 'poke': {
-          elements.push(Segment.poke(i.id))
-          break
-        }
-        case 'location': {
-          elements.push(Segment.location(i.lat, i.lon, i.title, i.address))
-          break
-        }
-        case 'long_msg': {
-          elements.push(Segment.long_msg(i.id))
-          break
-        }
-        case 'dice': {
-          elements.push(Segment.dice(i.id))
-          break
-        }
-        case 'rps': {
-          elements.push({ type: i.type, id: i.id })
-          break
-        }
-        case 'share': {
-          elements.push(Segment.share(i.url, i.title, i.content, i.image))
-          break
-        }
-        case 'raw': {
-          elements.push(i.data)
-          break
-        }
-        case 'button':
-        case 'keyboard':
-        case 'bubble_face':
-        case 'contact':
-        case 'gift':
-        case 'weather':
-        case 'basketball':
-        case 'market_face':
-        default: {
-          elements.push(Segment.text(JSON.stringify(i)))
-          break
-        }
-      }
-    }
-    return elements as Array<MessageElem>
-  }
-
   logger (level: 'info' | 'error' | 'trace' | 'debug' | 'mark' | 'warn' | 'fatal', ...args: any[]) {
     logger.bot(level, this.account.uid || this.account.uin, ...args)
   }
 
-  async GetVersion () {
-    const data = this.version
+  async getVersion () {
+    const data = this.adapter.version
     delete (data as { name?: string }).name
     return data
   }
 
-  async SendMessage (contact: Contact, elements: Array<KarinElement>) {
-    const message = await this.KarinConvertAdapter(elements)
+  async sendMsg (contact: Contact, elements: Array<Elements>) {
+    const message = await KarinConvertAdapter(this, elements)
     if (contact.scene === 'friend') {
       return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
     }
@@ -641,7 +117,7 @@ export class AdapterICQQ implements KarinAdapter {
    * @param size 头像大小，默认`0`
    * @returns 头像的url地址
    */
-  getAvatarUrl (user_id: string, size: 0 | 40 | 100 | 140 = 0) {
+  async getAvatarUrl (user_id: string, size: 0 | 40 | 100 | 140 = 0) {
     return `https://q1.qlogo.cn/g?b=qq&s=${size}&nk=` + user_id
   }
 
@@ -651,7 +127,7 @@ export class AdapterICQQ implements KarinAdapter {
    * @param history 历史头像记录，默认`0`，若要获取历史群头像则填写1,2,3...
    * @returns 头像的url地址
    */
-  getGroupAvatarUrl (group_id: string, size: 0 | 40 | 100 | 140 = 0, history = 0) {
+  async getGroupAvatarUrl (group_id: string, size: 0 | 40 | 100 | 140 = 0, history = 0) {
     return `https://p.qlogo.cn/gh/${group_id}/${group_id}${history ? '_' + history : ''}/` + size
   }
 
@@ -659,7 +135,7 @@ export class AdapterICQQ implements KarinAdapter {
     return { account_uid: this.account.uid, account_uin: this.account.uin, account_name: this.super.nickname }
   }
 
-  async RecallMessage (contact: Contact, message_id: string) {
+  async recallMsg (contact: Contact, message_id: string) {
     if (contact.scene === 'friend') {
       return await this.super.pickFriend(Number(contact.peer)).recallMsg(message_id)
     }
@@ -675,20 +151,20 @@ export class AdapterICQQ implements KarinAdapter {
     return await this.super.pickFriend(Number(target_uid_or_uin)).thumbUp(vote_count)
   }
 
-  async sendForwardMessage (contact: Contact, elements: NodeElement[]) {
+  async sendForwardMsg (contact: Contact, elements: NodeElement[]) {
     const userId = Number(this.account.uid)
     const nickName = this.account.name
     const messages = []
 
     for (const v of elements) {
-      const user_id = Number(v.user_id) || userId
-      const nickname = v.nickname || nickName
-      const content = (Array.isArray(v.content) ? v.content : [v.content]) as KarinElement[]
-      const message = await this.KarinConvertAdapter(content)
+      const user_id = v.subType === 'fake' ? Number(v.userId) : userId
+      const nickname = v.subType === 'fake' ? v.nickname : nickName
+      const content = v.subType === 'messageID' ? (await this.getForwardMsg(v.messageId))[0].elements : v.message
+      const message = await KarinConvertAdapter(this, content)
       messages.push(Segment.fake(user_id, message, nickname))
     }
 
-    if (contact.scene === Scene.Private) {
+    if (contact.scene === 'friend') {
       const res = await this.super.makeForwardMsg(messages, true)
       return await this.super.pickFriend(Number(contact.peer)).sendMsg(res)
     } else {
@@ -753,23 +229,32 @@ export class AdapterICQQ implements KarinAdapter {
     return await this.super.pickGroup(Number(group_id)).quit()
   }
 
-  async GetMessage (contact: Contact, messageId: string) {
-    const res = await this.super.getMsg(messageId)
+  async getMsg (contact: Contact, messageId: string) {
+    const res = await this.super.getMsg(messageId) as GroupMessage | PrivateMessage
     if (!res) throw TypeError('消息不存在')
-    const elements = await this.AdapterConvertKarin(res.message)
+    const userId = String(res.sender.user_id)
+    const elements = AdapterConvertKarin(this, res.message)
     return {
-      contact,
-      elements,
       time: res.time,
+      messageId: res.message_id,
+      message_id: res.message_id,
       message_seq: res.seq,
-      message_id: messageId,
-      user_id: res.sender.user_id + '',
-      sender: {
-        uid: res.sender.user_id + '',
-        uin: res.sender.user_id + '',
-        nick: res.sender.nickname || '',
-        role: 'role' in res.sender ? res.sender.role as Role || Role.Unknown : Role.Unknown,
+      messageSeq: res.seq,
+      contact: {
+        scene: res.message_type === 'group' ? 'group' as const : 'friend' as const,
+        peer: contact.peer,
+        sub_peer: null,
+        name: ''
       },
+      sender: {
+        userId,
+        uid: userId,
+        uin: res.sender.user_id,
+        nick: res.sender.nickname,
+        role: 'unknown' as const,
+        name: res.sender.nickname
+      },
+      elements
     }
   }
 
@@ -779,14 +264,14 @@ export class AdapterICQQ implements KarinAdapter {
     const messages = []
 
     for (const v of elements) {
-      const user_id = Number(v.user_id) || userId
-      const nickname = v.nickname || nickName
-      const content = (Array.isArray(v.content) ? v.content : [v.content]) as KarinElement[]
-      const message = await this.KarinConvertAdapter(content)
+      const user_id = v.subType === 'fake' ? Number(v.userId) : userId
+      const nickname = v.subType === 'fake' ? v.nickname : nickName
+      const content = v.subType === 'messageID' ? (await this.getForwardMsg(v.messageId))[0].elements : v.message
+      const message = await KarinConvertAdapter(this, content)
       messages.push(Segment.fake(user_id, message, nickname))
     }
 
-    if (contact.scene === Scene.Private) {
+    if (contact.scene === 'friend') {
       const result = await this.super.makeForwardMsg(messages, true)
       return result.data.meta.detail.resid
     } else {
@@ -822,25 +307,16 @@ export class AdapterICQQ implements KarinAdapter {
     return members
   }
 
-  async GetGroupMemberInfo (group_id: string, target_uid_or_uin: string, refresh?: boolean): Promise<GroupMemberInfo> {
-    const result = await this.super.getGroupMemberInfo(Number(group_id), Number(target_uid_or_uin), refresh)
+  async GetGroupMemberInfo (groupId: string, targetId: string, refresh?: boolean) {
+    const userId = Number(targetId)
+    const result = await this.super.getGroupMemberInfo(groupId, targetId, refresh)
     return {
-      uid: target_uid_or_uin,
-      uin: target_uid_or_uin,
-      nick: result.nickname || '',
+      userId: targetId,
+      role: result.role,
+      nick: result.nick || '',
       age: result.age || 0,
-      unique_title: result.title || '',
-      unique_title_expire_time: result.title_expire_time || 0,
-      card: result.card || '',
-      join_time: result.join_time || 0,
-      last_active_time: result.update_time || 0,
-      level: result.level || 0,
-      shut_up_time: result.shutup_time || 0,
-      distance: 0,
-      honors: [],
-      unfriendly: !!this.super.fl.get(Number(target_uid_or_uin)),
-      card_changeable: undefined,
-      role: result.role as Role,
+      uniqueTitle: result.uniqueTitle,
+      card: result.card
     }
   }
 
@@ -870,7 +346,7 @@ export class AdapterICQQ implements KarinAdapter {
     const result = await this.super.getForwardMsg(res_id)
     const messages: Array<PushMessageBody> = []
 
-    await Promise.all(result.map(async v => {
+    await Promise.all(result.map(async (v: { message: MessageElem[] | undefined; time: any; seq: any; user_id: string; nickname: any; group_id: string }) => {
       const elements = await this.AdapterConvertKarin(v.message)
       messages.push({
         elements,
@@ -966,43 +442,12 @@ export class AdapterICQQ implements KarinAdapter {
     return list
   }
 
-  async SendMessageByResId (contact: Contact, res_id: string): Promise<{ message_id: string, message_time: number }> {
-    const isPrivate = contact.scene === Scene.Private
-    const isNewVersion = this.version.name === '@icqqjs/icqq'
-
-    const sendMsg = async (peerId: number, msg: any) => {
-      const sendMethod = isPrivate ? this.super.pickFriend(peerId) : this.super.pickGroup(peerId)
-      const res = await sendMethod.sendMsg(msg)
-      return { message_id: res.message_id, message_time: res.time }
+  async sendLongMsg (contact: Contact, resId: string) {
+    let result
+    const { scene, peer } = contact
+    if (scene === 'group') {
+      result = await this.super.pickGroup(peer).sendMsg
     }
-
-    if (isNewVersion) {
-      /** 新版本走长消息发送 */
-      const msg = { type: 'long_msg', resid: res_id }
-      return sendMsg(Number(contact.peer), msg)
-    }
-
-    /** 旧版本重新构建json发送 */
-    const result = await this.super.getForwardMsg(res_id)
-    const json = {
-      app: 'com.tencent.multimsg',
-      config: { autosize: 1, forward: 1, round: 1, type: 'normal', width: 300 },
-      desc: '[聊天记录]',
-      extra: '',
-      meta: {
-        detail: {
-          news: [{ text: `${result[0].nickname}: 点击查看` }],
-          resid: res_id,
-          source: '群聊的聊天记录',
-          summary: `查看${result.length}条转发消息`,
-          uniseq: uuid().toUpperCase(),
-        },
-      },
-      prompt: '[聊天记录]',
-      ver: '0.0.0.5',
-      view: 'contact',
-    }
-    return sendMsg(Number(contact.peer), Segment.json(json))
   }
 
   async GetStrangerProfileCard (target_uid_or_uin: string[]): Promise<Array<FriendInfo>> {
@@ -1032,31 +477,35 @@ export class AdapterICQQ implements KarinAdapter {
     ]
   }
 
-  async GetHistoryMessage (contact: Contact, start_message_id: string, count: number = 20): Promise<Array<PushMessageBody>> {
-    const list: Array<PushMessageBody> = []
-    const result = await this.super.getChatHistory(start_message_id, count)
-    for (const v of result) {
-      const elements = await this.AdapterConvertKarin(v.message)
-      list.push({
-        elements,
-        time: v.time,
-        message_id: v.message_id,
-        message_seq: v.seq,
-        sender: {
-          uid: v.sender.user_id + '',
-          uin: v.sender.user_id + '',
-          nick: v.sender.nickname || '',
-          role: Role.Unknown,
-        },
-        contact: {
-          scene: contact.scene,
-          peer: contact.scene === Scene.Private ? v.sender.user_id + '' : contact.peer,
-          sub_peer: null,
-        },
-      })
-    }
+  async getHistoryMsg (contact: Contact, startMsgId: string, count: number) {
+    const res = await this.super.getChatHistory(startMsgId, count) as GroupMessage[] | PrivateMessage[]
+    const all = []
+    for (const v of res) {
+      const userId = String(v.sender.user_id)
+      const messageId = v.message_id
+      const messageSeq = v.seq
 
-    return list
+      const data = {
+        time: Date.now(),
+        messageId,
+        messageSeq,
+        message_id: messageId,
+        message_seq: messageSeq,
+        contact,
+        sender: {
+          userId,
+          uid: userId,
+          uin: v.sender.user_id,
+          nick: v?.sender?.nickname || '',
+          name: v?.sender?.nickname || '',
+          role: 'role' in v.sender && ['owner', 'admin', 'member'].includes(v.sender.role) ? v.sender.role as Role : 'unknown',
+          card: 'card' in v.sender ? v.sender.card : ''
+        },
+        elements: AdapterConvertKarin(this, v.message)
+      }
+      all.push(data)
+    }
+    return all
   }
 
   async GetGroupHonor (group_id: string, refresh?: boolean): Promise<Array<GroupHonorInfo>> {

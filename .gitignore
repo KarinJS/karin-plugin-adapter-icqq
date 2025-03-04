@@ -24,6 +24,8 @@ lerna-debug.log*
 /data/
 /config/config
 /resources
+.env
+@karinjs/
 
 # 依赖
 node_modules/

@@ -17,11 +17,13 @@
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "icqq": "node lib/tools/icqq.js",
     "pub": "npm publish --access public",
-    "sort": "sort-package-json"
+    "sort": "sort-package-json",
+    "karin": "karin",
+    "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "@icqqjs/icqq": "latest",
-    "@inquirer/prompts": "5.1.2"
+    "@inquirer/prompts": "5.1.2",
+    "icqq": "npm:@icqqjs/icqq@^1.5.12"
   },
   "devDependencies": {
     "@types/express": "latest",
@@ -31,6 +33,7 @@
     "@types/ws": "latest",
     "eslint": "latest",
     "neostandard": "latest",
+    "node-karin": "^1.4.2",
     "tsc-alias": "latest",
     "tsx": "latest",
     "typescript": "latest"
