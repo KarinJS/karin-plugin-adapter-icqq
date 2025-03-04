@@ -84,7 +84,6 @@ export async function autoSlider (uid: string, url: string): Promise<string> {
       if (data.type === 'ticket') {
         const ticket = data.payload.ticket
         logger.mark(`获取Ticket成功: ${ticket}`)
-        listener.emit('icqq.slider', ticket)
       } else if (data.type === 'handle') {
         const { url, ...opt } = data.payload
 
@@ -117,12 +116,12 @@ export async function autoSlider (uid: string, url: string): Promise<string> {
       resolve('')
     }, 120000)
 
-    listener.once('icqq.slider', ticket => {
-      // 成功获取ticket后清除超时
-      clearTimeout(timer)
-      socket.close()
-      resolve(ticket)
-    })
+    //  listener.once('icqq.slider', ticket => {
+    //  成功获取ticket后清除超时
+    //   clearTimeout(timer)
+    //   socket.close()
+    //   resolve(ticket)
+    // })
   })
 }
 
