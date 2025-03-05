@@ -31,19 +31,24 @@ class Common {
 }
 
 /**
- * 给全部主人、管理员发送消息
- * @param selfId Bot的QQ号
+ * 随机一个Bot给全部主人、管理员发送消息
  * @param message 消息内容
  */
-export const sendToAllAdmin = async (selfId: string, message: Parameters<typeof karin.sendMsg>[2]
+export const sendToAllAdmin = async (message: Parameters<typeof karin.sendMsg>[2]
 ) => {
-  const list = [...config.master(), ...config.admin()]
-  for (const id of list) {
+  const Botlist = karin.getAllBotID()
+  const data = Botlist.filter(item => item !== 'console')
+  const BotId = data[Math.floor(Math.random() * data.length)]
+  const MasterList = [...config.master(), ...config.admin()]
+  // 标准输入直接用logger发
+  logger.info(message)
+  if (!BotId) return false
+  for (const id of MasterList) {
     try {
       const contact = karin.contactFriend(id)
-      await karin.sendMsg(selfId, contact, message)
+      await karin.sendMsg(BotId, contact, message)
     } catch (error) {
-      logger.bot('info', selfId, `[${id}] 发送主动消息失败:`)
+      logger.bot('info', BotId, `[${id}] 发送主动消息失败:`)
       logger.error(error)
     }
   }

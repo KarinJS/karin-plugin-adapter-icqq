@@ -1,49 +1,41 @@
 import { Agent } from 'https'
 import { AdapterICQQ } from './index'
-import { logger } from 'node-karin'
-import { input, select } from '@inquirer/prompts'
+import { logger, karin, segment, common } from 'node-karin'
 import axios from 'node-karin/axios'
 import WebSocket from 'node-karin/ws'
+import { sendToAllAdmin } from '@plugin'
 
+let sendMsg = sendToAllAdmin
+const events = (id: number) => new Promise(resolve =>
+  karin.once(`ICQQLogin.${id}`, data => {
+    sendMsg = data.reply
+    resolve(data.msg)
+  })
+)
 /**
  * 处理滑块验证码
  */
-export async function slider (url: string, adapter: AdapterICQQ) {
+export async function slider (url: string, bot: AdapterICQQ) {
   try {
-    /** 停止内置命令行适配器的监听 */
-    process.stdin.emit('stdin.close')
-
-    adapter.logger('info', [
-      '\n\n------------------------------------',
-      '触发滑块验证码，需要获取ticket，请选择获取方式:',
-      `推荐使用 ${logger.green('自动获取')} 方式`,
-      '------------------------------------\n',
+    sendMsg([
+      `[${bot.account.selfId}]触发滑块验证码,请选择验证方式:`,
+      `网页验证: #QQ验证${bot.account.selfId}:网页`,
+      `手动验证: #QQ验证${bot.account.selfId}:ticket`,
+      url
     ].join('\n'))
-
-    // 获取用户输入
-    const res = await select({
-      message: '请选择获取方式:',
-      choices: [
-        { name: '0.自动获取 (hlhs提供 仅需过滑块即可)', value: '0' },
-        { name: '1.手动获取 (需要手动打开浏览器过滑块并监听请求获取ticket)', value: '1' },
-      ],
-    })
-
-    let ticket = ''
-    const uid = adapter.account.uid
-    if (res === '0') {
-      ticket = await autoSlider(uid, url)
-      // 如果自动获取失败则使用手动获取
-      if (!ticket) ticket = await manualSlider(uid, url)
-    } else {
-      ticket = await manualSlider(uid, url)
+    const uid = bot.account.uid
+    const msg = await events(Number(uid))
+    let ticket
+    switch (msg) {
+      case '网页':
+        ticket = await autoSlider(uid, url)
+        break
+      default:
+        ticket = msg
     }
 
-    await adapter.super.submitSlider(ticket)
-  } finally {
-    /** 重新开启内置命令行适配器的监听 */
-    process.stdin.emit('stdin.open')
-  }
+    await bot.super.submitSlider(ticket)
+  } catch {}
 }
 
 /**
@@ -51,14 +43,20 @@ export async function slider (url: string, adapter: AdapterICQQ) {
  * @param image 二维码图片
  * @param adapter 适配器实例
  */
-export async function qrcode (image: Buffer, adapter: AdapterICQQ) {
-  /** 停止监听 */
-  process.stdin.emit('stdin.close')
-  /** 监听一次回车 */
-  await input({ message: '请扫码登录后按回车键继续...' })
-  /** 重新监听 */
-  process.stdin.emit('stdin.open')
-  await adapter.super.login()
+export async function qrcode (image: Buffer, bot: AdapterICQQ) {
+  sendMsg(segment.image(String(image)))
+  while (true) {
+    await common.sleep(3000)
+    const { retcode } = await bot.super.queryQrcodeResult()
+    switch (retcode) {
+      case 0:
+        return bot.super.qrcodeLogin()
+      case 17:
+        return sendMsg(`二维码过期,发送#QQ登录${bot.account.selfId} 重新登录`)
+      case 54:
+        return sendMsg(`登录取消,发送#QQ登录${bot.account.selfId} 重新登录`)
+    }
+  }
 }
 
 /**
@@ -69,14 +67,10 @@ export async function autoSlider (uid: string, url: string): Promise<string> {
   // 用户访问url
   const page = `https://hanxuan-gt.hf.space/captcha/slider?key=${uid}`
   const socket = new WebSocket(page)
-  socket.on('error', () => logger.error('websocket连接失败，请检查你的dns设置或者网络是否正常'))
+  socket.on('error', () => logger.error('websocket连接失败,请检查你的dns设置或者网络是否正常'))
   socket.on('open', () => {
     socket.send(JSON.stringify({ type: 'register', payload: { url } }))
-    logger.bot('info', uid, [
-      '\n\n------------------------------------',
-      `请打开链接进行验证: ${logger.green(page)}`,
-      '温馨提示: 请勿关闭当前窗口，你需要在2分钟内打开链接进行验证~\n',
-    ].join('\n'))
+    sendMsg(page)
   })
   socket.on('message', async (msg: string) => {
     try {
@@ -84,6 +78,7 @@ export async function autoSlider (uid: string, url: string): Promise<string> {
       if (data.type === 'ticket') {
         const ticket = data.payload.ticket
         logger.mark(`获取Ticket成功: ${ticket}`)
+        karin.emit('icqq.slider', ticket)
       } else if (data.type === 'handle') {
         const { url, ...opt } = data.payload
 
@@ -116,84 +111,37 @@ export async function autoSlider (uid: string, url: string): Promise<string> {
       resolve('')
     }, 120000)
 
-    //  listener.once('icqq.slider', ticket => {
-    //  成功获取ticket后清除超时
-    //   clearTimeout(timer)
-    //   socket.close()
-    //   resolve(ticket)
-    // })
+    karin.once('icqq.slider', ticket => {
+    // 成功获取ticket后清除超时
+      clearTimeout(timer)
+      socket.close()
+      resolve(ticket)
+    })
   })
-}
-
-/**
- * 手动过滑块
- */
-export async function manualSlider (uid: string, url: string): Promise<string> {
-  logger.bot('info', uid, [
-    '\n\n------------------------------------',
-    `请打开链接获取ticket: ${logger.green(url)}`,
-    '参考教程: https://cloud.tencent.com/developer/article/2243916',
-  ].join('\n'))
-  const res = await input({ message: '请输入获取到的ticket:' })
-  if (!res) {
-    logger.bot('info', uid, 'ticket不能为空')
-    return ''
-  }
-  return res
 }
 
 /**
  * 处理设备锁
  */
-export async function device (event: { url: string, phone: string }, adapter: AdapterICQQ) {
+export async function device (event: { url: string, phone: string }, bot: AdapterICQQ) {
   try {
-    /** 停止内置命令行适配器的监听 */
-    process.stdin.emit('stdin.close')
-
-    adapter.logger('info', [
-      '\n\n------------------------------------',
-      '触发设备锁验证，请选择验证方式:',
-      '0.短信验证 (发送验证码到密保手机)',
-      '1.网页扫码 (使用已登录的设备扫码验证)',
-      '------------------------------------\n',
+    sendMsg([
+      `[${bot.account.selfId}]触发设备锁验证，请选择验证方式:`,
+      `短信验证: #QQ验证${bot.account.selfId}:短信`,
+      `网页扫码: 扫码完成后输入 #QQ验证${bot.account.selfId}:继续登录`,
+      event.url
     ].join('\n'))
-
-    // 获取用户输入
-    const res = await select({
-      message: '请选择验证方式:',
-      choices: [
-        { name: '短信验证 (发送验证码到密保手机)', value: '0' },
-        { name: '网页扫码 (使用已登录的设备扫码验证)', value: '1' },
-      ],
-    })
-
-    if (res === '1') {
-      adapter.logger('info', [
-        '\n\n------------------------------------',
-        '请复制链接从浏览器打开进行验证:',
-        '登录保护验证URL: ' + logger.green(event.url),
-        '密保手机号: ' + logger.green(event.phone),
-        '温馨提示: 请勿关闭当前窗口，验证完成后，请按回车进行登录\n',
-      ].join('\n'))
-
-      await input({ message: '等待验证完成...' })
-
-      return await adapter.super.login()
+    while (true) {
+      const msg = await events(Number(bot.account.selfId))
+      if (msg === '短信') {
+        bot.super.sendSmsCode()
+        sendMsg(`[${bot.account.selfId}] 短信验证码已发送,#QQ验证${bot.account.selfId}:验证码`)
+        bot.super.submitSmsCode(await events(Number(bot.account.selfId)))
+        break
+      } else if (msg === '继续登录') {
+        bot.super.login()
+        break
+      }
     }
-
-    await adapter.super.sendSmsCode()
-    logger.bot('mark', '已发送短信验证码，请输入收到的短信验证码')
-    const resCode = await input({
-      message: '请输入收到的短信验证码:',
-      validate: (input) => {
-        if (!input) return '验证码不能为空'
-        if (!Number(input)) return '验证码必须是纯数字'
-        return true
-      },
-    })
-    return adapter.super.submitSmsCode(resCode)
-  } finally {
-    /** 重新开启内置命令行适配器的监听 */
-    process.stdin.emit('stdin.open')
-  }
+  } catch {}
 }

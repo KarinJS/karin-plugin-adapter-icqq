@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "karin",
   "type": "module",
-  "main": "./lib/index.js",
+  "main": "lib/index.js",
   "files": [
     "/lib/**/*.js",
     "/lib/**/*.d.ts",
@@ -33,7 +33,7 @@
     "@types/ws": "latest",
     "eslint": "latest",
     "neostandard": "latest",
-    "node-karin": "^1.4.2",
+    "node-karin": "^1.4.5",
     "tsc-alias": "latest",
     "tsx": "latest",
     "typescript": "latest"
@@ -44,7 +44,16 @@
     }
   },
   "karin": {
+    "main": "src/index.ts",
+    "ts-apps": ["src/apps"],
     "apps": [],
-    "outDir": "lib"
+    "outDir": "lib",
+    "exclude": [
+      "lib/**/*",
+      "@karinjs/**/*"
+    ],
+    "include": [
+      "src/**/*"
+    ]
   }
 }
