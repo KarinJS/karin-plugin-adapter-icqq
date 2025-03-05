@@ -66,8 +66,12 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       createMessage(data, this)
     })
 
-    this.super.on('notice.group', async (data: any) => {
+    this.super.on('notice', async (data: any) => {
       createNoice(data, this)
+    })
+
+    this.super.on('request', async (data: any) => {
+      // 下次再写
     })
 
     /** 扫码登录 */
