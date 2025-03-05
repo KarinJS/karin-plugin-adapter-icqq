@@ -22,7 +22,6 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "@inquirer/prompts": "5.1.2",
     "icqq": "npm:@icqqjs/icqq@^1.5.12"
   },
   "devDependencies": {
@@ -46,11 +45,16 @@
   "karin": {
     "main": "src/index.ts",
     "ts-apps": ["src/apps"],
-    "apps": [],
+    "apps": ["lib/apps"],
     "outDir": "lib",
     "exclude": [
       "lib/**/*",
       "@karinjs/**/*"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
     ],
     "include": [
       "src/**/*"
