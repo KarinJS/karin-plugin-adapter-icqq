@@ -4,7 +4,8 @@ import {
   Client,
   segment as Segment,
   GroupMessage,
-  PrivateMessage
+  PrivateMessage,
+  genGroupMessageId
 } from 'icqq'
 import {
   registerBot,
@@ -15,11 +16,14 @@ import {
   AdapterType,
   AdapterBase,
   unregisterBot,
-  Elements
+  Elements,
+  GetGroupHighlightsResponse
 } from 'node-karin'
 import { createMessage } from '../create/message'
 import { createNoice } from 'src/create/notice'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
+import axios from 'node-karin/axios'
+import { sendToAllAdmin } from '@plugin'
 
 /**
  * - ICQQ适配器
@@ -52,9 +56,10 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       if (index) this.adapter.index = index
     })
 
-    /** 监听掉线 掉线后卸载bot */
-    this.super.on('system.offline', () => {
+    /** 监听掉线 掉线后卸载bot并发送消息到所有主人 */
+    this.super.on('system.offline', (event: { message: string }) => {
       unregisterBot('index', this.adapter.index)
+      sendToAllAdmin(this.selfId, `[${this.selfId}]账号下线:\n${event.message}\n发送#Bot上线${this.selfId} 重新登陆`)
     })
 
     this.super.on('message', async (data: any) => {
@@ -213,8 +218,56 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     return all
   }
 
-  // async getGroupHighlights (group_id: string, page: number = 0, page_size: number = 20) {
-  // }
+  async getGroupHighlights (groupId: string, page: number = 0, pageSize: number = 20) {
+    const list: Array<GetGroupHighlightsResponse & {
+      group_id: string
+      sender_uid: string
+      sender_uin: string
+      sender_nick: string
+      operator_uid: string
+      operator_uin: string
+      operator_nick: string
+      operation_time: number
+      message_time: number
+      message_id: string
+      message_seq: number
+      json_elements: string
+    }> = []
+    const url = `https://qun.qq.com/cgi-bin/group_digest/digest_list?bkn=${this.super.bkn}&bkn=${this.super.bkn}&group_code=${groupId}&page_start=${page}&page_limit=${pageSize}`
+    const headers = {
+      Cookie: this.super.cookies['qun.qq.com']
+    }
+    const res = await axios.get(url, { headers })
+
+    for (const v of res.data.data?.msg_list || []) {
+      const messageId = genGroupMessageId(Number(groupId), Number(v.sender_uin), v.msg_seq, v.sender_time, v.msg_random)
+      list.push({
+        groupId,
+        senderId: v.sender_uin,
+        operatorId: v.add_digest_uin,
+        senderName: v.sender_nick,
+        operatorName: v.add_digest_nick,
+        operationTime: v.add_digest_time,
+        messageTime: v.sender_time,
+        messageId,
+        messageSeq: v.msg_seq,
+        jsonElements: JSON.stringify(v.msg_content),
+        group_id: groupId,
+        sender_uid: v.sender_uin,
+        sender_uin: v.sender_uin,
+        sender_nick: v.sender_nick,
+        operator_uid: v.add_digest_uin,
+        operator_uin: v.add_digest_uin,
+        operator_nick: v.add_digest_nick,
+        operation_time: v.add_digest_time,
+        message_time: v.sender_time,
+        message_id: messageId,
+        message_seq: v.msg_seq,
+        json_elements: JSON.stringify(v.msg_content)
+      })
+    }
+    return list
+  }
 
   // 以下方法暂不打算实现
   async UploadFile (): Promise<any> { throw new Error('Method not implemented.') }

@@ -2,8 +2,20 @@ import { AdapterICQQ } from './index'
 import { createRequire } from 'module'
 import { common } from 'node-karin'
 import { basename, ConfigType } from '@plugin'
+import fs from 'fs'
+import path from 'path'
+import YAML from 'node-karin/yaml'
 
-const yamlPath = `./config/plugin/${basename}/config.yaml`
+// 初始化配置文件
+const yamlPath = './@karinjs/@karinjs-adapter-icqq/config.yaml'
+const config = {
+  sign_api_addr: 'sign地址',
+  list: []
+}
+if (!fs.existsSync(yamlPath)) {
+  fs.mkdirSync(path.dirname(yamlPath), { recursive: true })
+  fs.writeFileSync(yamlPath, YAML.stringify(config), 'utf8')
+}
 
 async function main () {
   if (!common.exists(yamlPath)) return
