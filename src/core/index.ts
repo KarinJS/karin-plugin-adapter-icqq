@@ -5,7 +5,9 @@ import {
   segment as Segment,
   GroupMessage,
   PrivateMessage,
-  genGroupMessageId
+  genGroupMessageId,
+  FriendInfo,
+  GroupInfo
 } from 'icqq'
 import {
   registerBot,
@@ -18,12 +20,12 @@ import {
   unregisterBot,
   Elements,
   GetGroupHighlightsResponse,
+  GroupInfo as GroupIf
 } from 'node-karin'
-import { createMessage } from '../create/message'
-import { createNoice } from 'src/create/notice'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
 import { sendToAllAdmin } from '@plugin'
+import { createMessage, createNoice, createRequest } from 'src/create'
 
 /**
  * - ICQQ适配器
@@ -71,7 +73,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
 
     this.super.on('request', async (data: any) => {
-      // 下次再写
+      createRequest(data, this)
     })
 
     /** 扫码登录 */
@@ -273,14 +275,93 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     return list
   }
 
-  // 以下方法暂不打算实现
-  async UploadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async DownloadFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async CreateFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  async RenameFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  async DeleteFolder (): Promise<any> { throw new Error('Method not implemented.') }
-  async DeleteFile (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetFileList (): Promise<any> { throw new Error('Method not implemented.') }
-  async GetFileSystemInfo (): Promise<any> { throw new Error('Method not implemented.') }
-  async SetMessageReaded (): Promise<any> { throw new Error('Method not implemented.') }
+  async setGgroupHighlights (groupId: string, messageId: string, create: boolean) {
+    try {
+      if (create) {
+        this.super.setEssenceMessage(messageId)
+        return true
+      } else {
+        this.super.removeEssenceMessage(messageId)
+        return true
+      }
+    } catch {
+      return false
+    }
+  }
+
+  async sendLike (targetId: string, count: number) {
+    return this.super.sendLike(Number(targetId), count)
+  }
+
+  async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean | undefined, kickReason?: string | undefined) {
+    return this.super.pickGroup(Number(groupId)).kickMember(Number(targetId), kickReason, rejectAddRequest)
+  }
+
+  async setGroupMute (groupId: string, targetId: string, duration: number) {
+    return this.super.pickGroup(groupId).muteMember(Number(targetId), duration)
+  }
+
+  async setGroupAllMute (groupId: string, isBan: boolean) {
+    return this.super.pickGroup(groupId).muteAll(isBan)
+  }
+
+  async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
+    return this.super.setGroupAdmin(groupId, targetId, isAdmin)
+  }
+
+  async setGroupMemberCard (groupId: string, targetId: string, card: string) {
+    return this.super.setGroupCard(groupId, targetId, card)
+  }
+
+  async setGroupName (groupId: string, groupName: string) {
+    return this.super.pickGroup(groupId).setName(groupName)
+  }
+
+  async setGroupQuit (groupId: string, isDismiss: boolean) {
+    if (isDismiss) return this.super.pickGroup(groupId).quit()
+    return false
+  }
+
+  async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
+    return this.super.pickGroup(groupId).setTitle(targetId, title)
+  }
+
+  async getStrangerInfo (targetId: string) {
+    const event = this.super.getStrangerInfo(targetId)
+    return {
+      userId: event.user_id,
+      nick: event.nickname,
+      age: event.age,
+      sex: event.sex
+    }
+  }
+
+  async getFriendList (refresh?: boolean | undefined) {
+    const friendList: Map<number, FriendInfo> = this.super.getFriendList()
+    return Array.from(friendList.values()).map(v => {
+      const userId = String(v.user_id)
+      return {
+        userId,
+        nick: v.nickname,
+        sex: v.sex,
+        uid: v.user_uid,
+        uin: userId,
+        remark: v.remark
+      }
+    })
+  }
+
+  async getGroupInfo (groupId: string, noCache?: boolean | undefined): Promise<GroupIf> {
+    const info = this.super.getGroupInfo(groupId, noCache) as GroupInfo
+    return {
+      groupId,
+      groupName: info.group_name,
+      owner: String(info.owner_id),
+      groupRemark: info.group_name,
+      admins: [],
+      maxMemberCount: info.max_member_count,
+      memberCount: info.member_count,
+      groupDesc: ''
+    }
+  }
 }
