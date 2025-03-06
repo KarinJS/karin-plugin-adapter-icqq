@@ -10,3 +10,7 @@ export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
   }
   karin.emit(`ICQQLogin.${data.selfId}`, data)
 })
+
+export const OnlineOffline = karin.command(/^#qq(上|下)线.+$/i, async (e) => {
+  // 不知道怎么写，先放着
+})
