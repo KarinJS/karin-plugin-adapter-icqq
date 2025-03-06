@@ -7,7 +7,9 @@ import {
   PrivateMessage,
   genGroupMessageId,
   FriendInfo,
-  GroupInfo
+  GroupInfo,
+  MemberInfo,
+  parseGroupMessageId
 } from 'icqq'
 import {
   registerBot,
@@ -20,7 +22,8 @@ import {
   unregisterBot,
   Elements,
   GetGroupHighlightsResponse,
-  GroupInfo as GroupIf
+  GroupSender,
+  senderGroup,
 } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
@@ -278,10 +281,10 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   async setGgroupHighlights (groupId: string, messageId: string, create: boolean) {
     try {
       if (create) {
-        this.super.setEssenceMessage(messageId)
+        await this.super.setEssenceMessage(messageId)
         return true
       } else {
-        this.super.removeEssenceMessage(messageId)
+        await this.super.removeEssenceMessage(messageId)
         return true
       }
     } catch {
@@ -290,44 +293,44 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async sendLike (targetId: string, count: number) {
-    return this.super.sendLike(Number(targetId), count)
+    return await this.super.sendLike(Number(targetId), count)
   }
 
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean | undefined, kickReason?: string | undefined) {
-    return this.super.pickGroup(Number(groupId)).kickMember(Number(targetId), kickReason, rejectAddRequest)
+    return await this.super.pickGroup(Number(groupId)).kickMember(Number(targetId), kickReason, rejectAddRequest)
   }
 
   async setGroupMute (groupId: string, targetId: string, duration: number) {
-    return this.super.pickGroup(groupId).muteMember(Number(targetId), duration)
+    return await this.super.pickGroup(groupId).muteMember(Number(targetId), duration)
   }
 
   async setGroupAllMute (groupId: string, isBan: boolean) {
-    return this.super.pickGroup(groupId).muteAll(isBan)
+    return await this.super.pickGroup(groupId).muteAll(isBan)
   }
 
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
-    return this.super.setGroupAdmin(groupId, targetId, isAdmin)
+    return await this.super.setGroupAdmin(groupId, targetId, isAdmin)
   }
 
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
-    return this.super.setGroupCard(groupId, targetId, card)
+    return await this.super.setGroupCard(groupId, targetId, card)
   }
 
   async setGroupName (groupId: string, groupName: string) {
-    return this.super.pickGroup(groupId).setName(groupName)
+    return await this.super.pickGroup(groupId).setName(groupName)
   }
 
   async setGroupQuit (groupId: string, isDismiss: boolean) {
-    if (isDismiss) return this.super.pickGroup(groupId).quit()
+    if (isDismiss) return await this.super.pickGroup(groupId).quit()
     return false
   }
 
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
-    return this.super.pickGroup(groupId).setTitle(targetId, title)
+    return await this.super.pickGroup(groupId).setTitle(targetId, title)
   }
 
   async getStrangerInfo (targetId: string) {
-    const event = this.super.getStrangerInfo(targetId)
+    const event = await this.super.getStrangerInfo(targetId)
     return {
       userId: event.user_id,
       nick: event.nickname,
@@ -337,7 +340,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async getFriendList (refresh?: boolean | undefined) {
-    const friendList: Map<number, FriendInfo> = this.super.getFriendList()
+    const friendList: Map<number, FriendInfo> = await this.super.getFriendList()
     return Array.from(friendList.values()).map(v => {
       const userId = String(v.user_id)
       return {
@@ -351,8 +354,8 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
   }
 
-  async getGroupInfo (groupId: string, noCache?: boolean | undefined): Promise<GroupIf> {
-    const info = this.super.getGroupInfo(groupId, noCache) as GroupInfo
+  async getGroupInfo (groupId: string, noCache?: boolean | undefined) {
+    const info = await this.super.getGroupInfo(groupId, noCache) as GroupInfo
     return {
       groupId,
       groupName: info.group_name,
@@ -362,6 +365,129 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       maxMemberCount: info.max_member_count,
       memberCount: info.member_count,
       groupDesc: ''
+    }
+  }
+
+  async getGroupList (refresh?: boolean | undefined) {
+    const info: Map<number, GroupInfo> = await this.super.getGroupList()
+    return Array.from(info.values()).map(v => {
+      const groupId = String(v.group_id)
+      const groupName = v.group_name
+      return {
+        groupId,
+        groupName,
+        owner: String(v.owner_id),
+        groupRemark: v.group_name,
+        admins: [],
+        maxMemberCount: v.max_member_count,
+        memberCount: v.member_count,
+        groupDesc: ''
+      }
+    })
+  }
+
+  async getGroupMemberInfo (groupId: string, targetId: string, refresh?: boolean | undefined) {
+    const userId = Number(targetId)
+    const info: MemberInfo = await this.super.getGroupMemberInfo(groupId, userId, refresh)
+    return {
+      userId: targetId,
+      nick: info.nickname,
+      role: info.role,
+      age: info.age,
+      area: info.area,
+      uniqueTitle: info.title,
+      card: info.card,
+      joinTime: info.join_time,
+      lastActiveTime: info.last_sent_time,
+      level: info.level,
+      shutUpTime: info.shutup_time,
+      distance: undefined,
+      honors: [],
+      unfriendly: undefined,
+      sex: info.sex,
+      get sender (): GroupSender {
+        return senderGroup(
+          this.userId,
+          this.role,
+          this.nick,
+          this.sex,
+          this.age,
+          this.card,
+          this.area,
+          this.level
+        )
+      }
+    }
+  }
+
+  async getGroupMemberList (groupId: string, refresh?: boolean | undefined) {
+    const info: Map<number, MemberInfo> = await this.super.getGroupMemberList(Number(groupId), refresh)
+    return Array.from(info.values()).map(v => {
+      const targetId = String(v.user_id)
+      return {
+        userId: targetId,
+        uid: targetId,
+        uin: targetId,
+        nick: v.nickname,
+        role: v.role,
+        age: v.age,
+        area: v.area,
+        uniqueTitle: v.title,
+        card: v.card,
+        joinTime: v.join_time,
+        lastActiveTime: v.last_sent_time,
+        level: v.level,
+        shutUpTime: v.shutup_time,
+        distance: undefined,
+        honors: [],
+        unfriendly: undefined,
+        sex: v.sex,
+        get sender (): GroupSender {
+          return senderGroup(
+            targetId,
+            this.role,
+            this.nick,
+            this.sex,
+            this.age,
+            this.card,
+            this.area,
+            this.level
+          )
+        }
+      }
+    })
+  }
+
+  // async getGroupHonor (groupId: string) {
+  // }
+
+  async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string | undefined) {
+    return await this.super.setFriendAddRequest(requestId, isApprove, remark)
+  }
+
+  async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string | undefined) {
+    return await this.super.setGroupAddRequest(requestId, isApprove, denyReason)
+  }
+
+  async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
+    return await this.super.setGroupAddRequest(requestId, isApprove)
+  }
+
+  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
+    const { group_id, seq } = parseGroupMessageId(messageId)
+    return await this.super.pickGroup(group_id).setReaction(seq, String(faceId))
+  }
+
+  async uploadFile (contact: Contact, file: string, name: string, folder?: string) {
+    try {
+      if (contact.scene === 'group') {
+        await this.super.pickGroup(Number(contact.peer)).sendFile(file, folder, name)
+      } else {
+        await this.super.pickFriend(Number(contact.peer)).sendFile(file, name)
+      }
+      return true
+    } catch {
+      return false
     }
   }
 }
