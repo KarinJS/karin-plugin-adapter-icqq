@@ -44,10 +44,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
       # 二次构建旧版本
-      - run: npm run icqq
-        if: ${{ steps.release.outputs.release_created }}
+      # - run: npm run icqq
+      #  if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
-      - run: npm run pub
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
+      # - run: npm run pub
+      #  env:
+      #    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        #if: ${{ steps.release.outputs.release_created }}
