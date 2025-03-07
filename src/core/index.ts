@@ -41,7 +41,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     this.account.uin = selfId
     this.account.name = ''
     this.account.selfId = selfId
-    this.account.avatar = ''
+    this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${selfId}`
     this.adapter.name = 'ICQQ'
     this.adapter.index = 0
     this.adapter.version = version
@@ -490,4 +490,9 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       return false
     }
   }
+
+  // 先暂时不写
+  // async downloadFile () {}
+
+  // async pokeUser (contact: Contact, count?: number | undefined) {}
 }
