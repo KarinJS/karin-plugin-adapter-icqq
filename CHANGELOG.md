@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.16](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.15...v1.3.16) (2025-03-07)
+
+
+### Bug Fixes
+
+* bug ([8bc388c](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/8bc388c7811140756222ac2815e722eeed75b48b))
+
 ## [1.3.15](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.14...v1.3.15) (2024-11-24)
 
 
