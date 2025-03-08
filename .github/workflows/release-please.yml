@@ -24,22 +24,25 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
+        # 安装pnpm
+      - run: npm install pnpm -g
+        if: ${{ steps.release.outputs.release_created }}
       # 安装依赖
-      - run: npm install && npm up icqq@npm:@icqqjs/icqq
+      - run: pnpm install && pnpm up icqq@npm:@icqqjs/icqq
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
       # 添加node-karin开发依赖
-      - run: npm install node-karin@latest --save-dev
+      - run: pnpm install node-karin@latest --save-dev
         if: ${{ steps.release.outputs.release_created }}
       # 构建输出
-      - run: npm run build
+      - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
       # 安装jq工具 删除开发依赖
       - run: sudo apt-get install jq && jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
-      - run: npm run pub
+      - run: pnpm run pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
