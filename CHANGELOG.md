@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.0...v1.4.1) (2025-03-08)
+
+
+### Bug Fixes
+
+* 更新icqq依赖版本为通配符 ([22bcbde](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/22bcbde83c3200875c79e42fce9edb41d67372ef))
+
 ## [1.4.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.16...v1.4.0) (2025-03-08)
 
 
