@@ -22,7 +22,7 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "icqq": "*"
+    "icqq": "npm:@icqqjs/icqq@^1.6.0"
   },
   "devDependencies": {
     "@types/express": "latest",
@@ -38,7 +38,7 @@
     "typescript": "latest"
   },
   "peerDependenciesMeta": {
-    "@icqqjs/icqq": {
+    "icqq": {
       "optional": true
     }
   },
