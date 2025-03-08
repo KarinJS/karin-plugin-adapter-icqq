@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.3...v1.4.4) (2025-03-08)
+
+
+### Bug Fixes
+
+* 修复工作流配置中的条件语句 ([8e87391](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/8e8739112d92f1d66cf6252ee09ccab8f52ac40d))
+* 更新icqq依赖版本并优化工作流配置 ([40182e6](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/40182e62730df4172664385004114b5e2943c837))
+
 ## [1.4.3](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.2...v1.4.3) (2025-03-08)
 
 
