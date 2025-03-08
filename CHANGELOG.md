@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.1...v1.4.2) (2025-03-08)
+
+
+### Bug Fixes
+
+* 更新npm安装命令以包含icqq依赖的升级 ([4b29101](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/4b2910187d4f997ba6524f3bf0e8185b44b31575))
+
 ## [1.4.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.0...v1.4.1) (2025-03-08)
 
 
