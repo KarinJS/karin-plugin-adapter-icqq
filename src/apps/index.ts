@@ -9,7 +9,7 @@ export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
     e
   }
   karin.emit(`ICQQLogin.${data.selfId}`, data)
-})
+}, { name: 'ICQQ验证', perm: 'master', priority: -1 })
 
 export const OnlineOffline = karin.command(/^#qq(上|下)线.+$/i, async (e) => {
   const id = e.msg.replace(/^#qq(上|下)线/i, '').trim()
@@ -20,4 +20,4 @@ export const OnlineOffline = karin.command(/^#qq(上|下)线.+$/i, async (e) => 
     bot.super.logout()
     return e.reply(`[${id} 下线成功]`)
   }
-})
+}, { name: 'ICQQ上线下线', perm: 'master', priority: -1 })
