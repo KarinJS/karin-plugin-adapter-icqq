@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.4...v1.4.5) (2025-03-08)
+
+
+### Bug Fixes
+
+* 更新ICQQ命令的名称和权限设置 ([99c67b9](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/99c67b9cba87eeca41e708d499649a058dab9b13))
+
 ## [1.4.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.3...v1.4.4) (2025-03-08)
 
 
