@@ -43,7 +43,7 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
       # 修改icqq版本为*
       - run: npm run icqq
-        #  if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: pnpm run pub
         env:
