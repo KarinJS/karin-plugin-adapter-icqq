@@ -22,7 +22,7 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "icqq": "npm:@icqqjs/icqq@^1.5.12"
+    "icqq": "*"
   },
   "devDependencies": {
     "@types/express": "latest",
