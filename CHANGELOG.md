@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.16...v1.4.0) (2025-03-08)
+
+
+### Features
+
+* 实现QQ上下线命令功能 ([a9737cf](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/a9737cfee2731042316d80f859d2a6a0cc7df390))
+
 ## [1.3.16](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.3.15...v1.3.16) (2025-03-07)
 
 
