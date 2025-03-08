@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.2...v1.4.3) (2025-03-08)
+
+
+### Bug Fixes
+
+* 将工作流中的npm命令替换为pnpm以优化依赖管理 ([ab7ec93](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/ab7ec939da6841945b09d03d8196e17038655a7f))
+
 ## [1.4.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.1...v1.4.2) (2025-03-08)
 
 
