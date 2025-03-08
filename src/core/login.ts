@@ -3,7 +3,7 @@ import { AdapterICQQ } from './index'
 import { logger, karin, segment, common } from 'node-karin'
 import axios from 'node-karin/axios'
 import WebSocket from 'node-karin/ws'
-import { sendToAllAdmin } from '@plugin'
+import { sendToAllAdmin } from '@/imports'
 
 let sendMsg = sendToAllAdmin
 const events = (id: number) => new Promise(resolve =>
@@ -21,6 +21,7 @@ export async function slider (url: string, bot: AdapterICQQ) {
       `[${bot.account.selfId}]触发滑块验证码,请选择验证方式:`,
       `网页验证: #QQ验证${bot.account.selfId}:网页`,
       `手动验证: #QQ验证${bot.account.selfId}:ticket`,
+      '手动验证请将ticket替换为你自己获取的ticket',
       url
     ].join('\n'))
     const uid = bot.account.uid
@@ -33,7 +34,7 @@ export async function slider (url: string, bot: AdapterICQQ) {
       default:
         ticket = msg
     }
-
+    logger.info(ticket)
     await bot.super.submitSlider(ticket)
   } catch {}
 }

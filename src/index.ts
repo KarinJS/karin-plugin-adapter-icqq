@@ -1,6 +1,6 @@
 import './core/init'
 import { logger, common } from 'node-karin'
-import { basename, dirPath } from '@plugin'
+import { basename, dirPath } from '@/imports'
 
 const pkg = common.readJson(dirPath + '/package.json')
 

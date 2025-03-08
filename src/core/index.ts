@@ -1,5 +1,4 @@
 import { slider, device, qrcode } from './login'
-import { CfgType } from '../imports/types'
 import {
   Client,
   segment as Segment,
@@ -27,8 +26,8 @@ import {
 } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
-import { sendToAllAdmin } from '@plugin'
-import { createMessage, createNoice, createRequest } from 'src/create'
+import { sendToAllAdmin, CfgType } from '@/imports'
+import { createMessage, createNoice, createRequest } from '@/create'
 
 /**
  * - ICQQ适配器

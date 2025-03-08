@@ -10,8 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@plugin": [
-        "src/imports/index"
+      "@/*": [
+        "src/*"
       ]
     },
     "rootDir": "./src",
@@ -24,8 +24,7 @@
     "resolveFullExtension": ".js"
   },
   "include": [
-    "src/**/*",
-    "src/qq.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules"

@@ -12,6 +12,12 @@ export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
 })
 
 export const OnlineOffline = karin.command(/^#qq(上|下)线.+$/i, async (e) => {
-  // 不知道怎么写，先放着
-  // 万能的网友要是有想法，可以提提issue
+  const id = e.msg.replace(/^#qq(上|下)线/i, '').trim()
+  if (!id) return false
+  if (e.msg.includes('下')) {
+    const bot = karin.getBot(id)
+    if (!bot) return false
+    bot.super.logout()
+    return e.reply(`[${id} 下线成功]`)
+  }
 })

@@ -1,7 +1,7 @@
 import { AdapterICQQ } from './index'
 import { createRequire } from 'module'
 import { basePath, existsSync, mkdirSync, requireFileSync } from 'node-karin'
-import { ConfigType, dirPath } from '@plugin'
+import { ConfigType, dirPath } from '@/imports'
 import fs from 'fs'
 import path from 'path'
 
@@ -40,7 +40,7 @@ async function main () {
 
   data.list.forEach(v => {
     if (!v.cfg.sign_api_addr) v.cfg.sign_api_addr = data.sign_api_addr || ''
-    v.cfg.data_dir = `${basePath}/${pluginName}/${v.qq}`
+    v.cfg.data_dir = `${basePath}/${pluginName}/data/${v.qq}`
     Object.assign(v.cfg, tmp)
     new AdapterICQQ(v, pack.version as string).init(v)
   })

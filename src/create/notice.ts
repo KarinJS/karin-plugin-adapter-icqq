@@ -13,7 +13,7 @@ import {
   GroupTransferEvent,
   GroupReactionEvent
 } from 'icqq/lib/events'
-import { AdapterICQQ } from '../core'
+import { AdapterICQQ } from '@/core'
 import {
   contactFriend,
   contactGroup,
@@ -174,6 +174,7 @@ export const createNoice = (event:
           type: 'invite'
         }
       })
+      return true
     }
     // 群消息减少
     if (event.sub_type === 'decrease') {

@@ -1,6 +1,6 @@
 import { contactFriend, contactGroup, contactGroupTemp, createFriendMessage, createGroupMessage, createGroupTempMessage, logger, senderFriend, senderGroup } from 'node-karin'
-import { AdapterConvertKarin } from '../core/convert'
-import { AdapterICQQ } from '../core'
+import { AdapterConvertKarin } from '@/core/convert'
+import { AdapterICQQ } from '@/core'
 import { GroupMessageEvent, PrivateMessageEvent } from 'icqq'
 
 /**
@@ -46,6 +46,7 @@ export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bo
         contact,
         sender,
       })
+      return true
     }
     logger.warn(`[AdapterICQQ] 收到未知的私聊事件: ${JSON.stringify(event)}`)
     return true
@@ -68,6 +69,7 @@ export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bo
       contact,
       sender,
     })
+    return true
   }
   logger.warn(`[AdapterICQQ] 收到未知事件: ${JSON.stringify(event)}`)
   return true

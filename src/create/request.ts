@@ -1,6 +1,6 @@
 import { FriendRequestEvent, GroupInviteEvent, GroupRequestEvent } from 'icqq'
 import { contactFriend, contactGroup, createGroupApplyRequest, createGroupInviteRequest, createPrivateApplyRequest, logger, senderFriend, senderGroup } from 'node-karin'
-import { AdapterICQQ } from 'src/core'
+import { AdapterICQQ } from '@/core'
 
 /**
  * 创建请求事件

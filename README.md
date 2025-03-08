@@ -2,23 +2,6 @@
 
 ## 安装插件
 
-> [!IMPORTANT]
-> 如果不知道什么是`token` 那就安装`无token`版本即可
-> 如果没有`token`，更建议使用其他协议
-
-<details>
-<summary>无token版本</summary>
-
-```bash
-pnpm add @karinjs/adapter-icqq-old -w
-```
-
-</details>
-
-<details>
-<summary>有token点击展开查看</summary>
-
-
 1. 在你的项目根目录新建文件 `.npmrc` ，并录入以下内容
 
 ```text
@@ -45,51 +28,39 @@ E-Mail: # 你的公开邮箱地址
 pnpm add @karinjs/adapter-icqq -w
 ```
 
-</details>
-
 ## 配置
 
-> 目前暂时只支持手动配置
+配置文件参考
+配置文件目录 `@karinjs/@karinjs-adapter-icqq/config/config.json`
 
-推荐先运行一次 生成配置文件夹
-
-```bash
-node .
-```
-
-打开 `config/plugin/@karinjs/adapter-icqq` 文件夹，创建`config.yaml`文件，填入以下内容
-
-```yaml
-# 默认签名服务器地址
-sign_api_addr: sign地址
-
-list:
-  - qq: QQ号
-    password: 密码
-    cfg:
-      # 登录设备平台 1:安卓手机、 2:安卓平板 、 3:安卓手表、 4:MacOS 、 5:iPad 、 6:Tim
-      platform: 2
-      # 协议版本 不填默认最新
-      ver: ""
-      # 群聊和频道中过滤自己的消息
-      ignore_self: true
-      # 签名服务器地址 不设置将使用默认地址
-      sign_api_addr: ""
-      # 是否缓存群员列表，群多的时候(500~1000)会多占据约100MB+内存
-      cache_group_member: true
-  - qq: QQ号2
-    password: QQ密码2
-    cfg:
-      # 登录设备平台 1:安卓手机、 2:安卓平板 、 3:安卓手表、 4:MacOS 、 5:iPad 、 6:Tim
-      platform: 2
-      # 协议版本 不填默认最新
-      ver: ""
-      # 群聊和频道中过滤自己的消息
-      ignore_self: true
-      # 签名服务器地址 不设置将使用默认地址
-      sign_api_addr: ""
-      # 是否缓存群员列表，群多的时候(500~1000)会多占据约100MB+内存
-      cache_group_member: true
+```json
+{
+  "sign_api_addr": "签名地址", // 默认签名地址
+  "list": [
+    {
+      "qq": 114514, // QQ账号
+      "password": "114514", // QQ密码，为空则扫码登录
+      "cfg": {
+        "platform": 2, // 登录设备平台 1:安卓手机、 2:安卓平板 、 3:安卓手表、 4:MacOS 、 5:iPad 、 6:Tim
+        "ver": "", // 协议版本 不填默认最新
+        "sign_api_addr": "", // 签名服务器地址 不设置将使用默认地址
+        "ignore_self": true, // 群聊和频道中过滤自己的消息
+        "cache_group_member": true // 是否缓存群员列表，群多的时候(500~1000)会多占据约100MB+内存
+      }
+    },
+    {
+      "qq": 1111, // QQ账号2
+      "password": "11111", // QQ密码2，为空则扫码登录
+      "cfg": {
+        "platform": 2, // 登录设备平台 1:安卓手机、 2:安卓平板 、 3:安卓手表、 4:MacOS 、 5:iPad 、 6:Tim
+        "ver": "", // 协议版本 不填默认最新
+        "sign_api_addr": "", // 签名服务器地址 不设置将使用默认地址
+        "ignore_self": true, // 群聊和频道中过滤自己的消息
+        "cache_group_member": true // 是否缓存群员列表，群多的时候(500~1000)会多占据约100MB+内存
+      }
+    }
+  ]
+}
 
 ```
 
