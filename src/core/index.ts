@@ -1,4 +1,3 @@
-import { slider, device, qrcode } from './login'
 import {
   Client,
   segment as Segment,
@@ -23,16 +22,20 @@ import {
   GetGroupHighlightsResponse,
   GroupSender,
   senderGroup,
+  SendMsgResults,
 } from 'node-karin'
+import type { Message } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
 import { sendToAllAdmin, CfgType } from '@/imports'
 import { createMessage, createNoice, createRequest } from '@/create'
+import { Login } from './login'
 
 /**
  * - ICQQ适配器
  */
 export class AdapterICQQ extends AdapterBase implements AdapterType {
+  super: Client
   constructor (bot: CfgType, version: string) {
     super()
     const selfId = String(bot.qq)
@@ -51,7 +54,8 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     this.super = new Client(bot.cfg)
   }
 
-  async init (bot: CfgType) {
+  async init (bot: CfgType, e?: Message) {
+    const login = new Login(e)
     this.super.on('system.online', () => {
       this.logger('info', '登录成功~')
       this.account.name = this.super.nickname
@@ -79,13 +83,13 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
 
     /** 扫码登录 */
-    this.super.on('system.login.qrcode', (event: { image: Buffer<ArrayBufferLike> }) => qrcode(event.image, this))
+    this.super.on('system.login.qrcode', (event: { image: Buffer<ArrayBufferLike> }) => login.qrcode(event.image, this))
 
     /** 遇到滑动验证码(滑块) */
-    this.super.on('system.login.slider', (event: { url: string }) => slider(event.url, this))
+    this.super.on('system.login.slider', (event: { url: string }) => login.slider(event.url, this))
 
     /** 遇到短信验证码(包含真假设备锁) */
-    this.super.on('system.login.device', (event: { url: string; phone: string }) => device(event, this))
+    this.super.on('system.login.device', (event: { url: string; phone: string }) => login.device(event, this))
 
     /** 遇到登录错误的信息 */
     this.super.on('system.login.error', (event: { code: any; message: any }) => {
@@ -105,11 +109,25 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async sendMsg (contact: Contact, elements: Array<Elements>) {
-    const message = await KarinConvertAdapter(this, elements)
-    if (contact.scene === 'friend') {
-      return await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
+    const result: SendMsgResults = {
+      messageId: '',
+      time: Date.now(),
+      rawData: {},
+      message_id: '',
+      messageTime: Date.now()
     }
-    return await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
+
+    const message = await KarinConvertAdapter(this, elements)
+    const res = contact.scene === 'friend'
+      ? await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
+      : await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
+
+    result.messageId = res.message_id
+    result.rawData = res
+    result.time = res.time
+    result.messageTime = res.time
+    result.message_id = res.message_id
+    return result
   }
 
   /**
@@ -151,20 +169,26 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       messages.push(Segment.fake(user_id, message, nickname))
     }
 
+    // TODO: 转发消息ID
+    const result: { messageId: string, forwardId: string } = { messageId: '', forwardId: '' }
+
     if (contact.scene === 'friend') {
-      const res = await this.super.makeForwardMsg(messages, true)
-      return await this.super.pickFriend(Number(contact.peer)).sendMsg(res)
+      const data = await this.super.makeForwardMsg(messages, true)
+      const res = await this.super.pickFriend(Number(contact.peer)).sendMsg(data)
+      result.messageId = res.message_id
     } else {
-      const res = await this.super.makeForwardMsg(messages, false)
-      return await this.super.pickGroup(Number(contact.peer)).sendMsg(res)
+      const data = await this.super.makeForwardMsg(messages, false)
+      const res = await this.super.pickGroup(Number(contact.peer)).sendMsg(data)
+      result.messageId = res.message_id
     }
+    return result
   }
 
   async getMsg (contact: Contact, messageId: string) {
     const res = await this.super.getMsg(messageId) as GroupMessage | PrivateMessage
     if (!res) throw TypeError('消息不存在')
     const userId = String(res.sender.user_id)
-    const elements = AdapterConvertKarin(this, res.message)
+    const elements = await AdapterConvertKarin(this, res.message)
     return {
       time: res.time,
       messageId: res.message_id,
@@ -219,7 +243,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
           role: 'role' in v.sender && ['owner', 'admin', 'member'].includes(v.sender.role) ? v.sender.role as Role : 'unknown',
           card: 'card' in v.sender ? v.sender.card : ''
         },
-        elements: AdapterConvertKarin(this, v.message)
+        elements: await AdapterConvertKarin(this, v.message)
       }
       all.push(data)
     }
@@ -300,38 +324,38 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async setGroupMute (groupId: string, targetId: string, duration: number) {
-    return await this.super.pickGroup(groupId).muteMember(Number(targetId), duration)
+    return await this.super.pickGroup(Number(groupId)).muteMember(Number(targetId), duration)
   }
 
   async setGroupAllMute (groupId: string, isBan: boolean) {
-    return await this.super.pickGroup(groupId).muteAll(isBan)
+    return await this.super.pickGroup(Number(groupId)).muteAll(isBan)
   }
 
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
-    return await this.super.setGroupAdmin(groupId, targetId, isAdmin)
+    return await this.super.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
   }
 
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
-    return await this.super.setGroupCard(groupId, targetId, card)
+    return await this.super.setGroupCard(Number(groupId), Number(targetId), card)
   }
 
   async setGroupName (groupId: string, groupName: string) {
-    return await this.super.pickGroup(groupId).setName(groupName)
+    return await this.super.pickGroup(Number(groupId)).setName(groupName)
   }
 
   async setGroupQuit (groupId: string, isDismiss: boolean) {
-    if (isDismiss) return await this.super.pickGroup(groupId).quit()
+    if (isDismiss) return await this.super.pickGroup(Number(groupId)).quit()
     return false
   }
 
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
-    return await this.super.pickGroup(groupId).setTitle(targetId, title)
+    return await this.super.pickGroup(Number(groupId)).setTitle(Number(targetId), title)
   }
 
   async getStrangerInfo (targetId: string) {
-    const event = await this.super.getStrangerInfo(targetId)
+    const event = await this.super.getStrangerInfo(Number(targetId))
     return {
-      userId: event.user_id,
+      userId: event.user_id + '',
       nick: event.nickname,
       age: event.age,
       sex: event.sex
@@ -354,7 +378,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async getGroupInfo (groupId: string, noCache?: boolean | undefined) {
-    const info = await this.super.getGroupInfo(groupId, noCache) as GroupInfo
+    const info = await this.super.getGroupInfo(Number(groupId), noCache) as GroupInfo
     return {
       groupId,
       groupName: info.group_name,
@@ -387,7 +411,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
 
   async getGroupMemberInfo (groupId: string, targetId: string, refresh?: boolean | undefined) {
     const userId = Number(targetId)
-    const info: MemberInfo = await this.super.getGroupMemberInfo(groupId, userId, refresh)
+    const info: MemberInfo = await this.super.getGroupMemberInfo(Number(groupId), userId, refresh)
     return {
       userId: targetId,
       nick: info.nickname,

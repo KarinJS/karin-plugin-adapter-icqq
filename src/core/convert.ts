@@ -6,7 +6,7 @@ import { AdapterICQQ } from './index'
  * icqq转Karin
  * @returns Karin格式消息
  */
-export function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem> = []): Array<Elements> {
+export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem> = []): Promise<Array<Elements>> {
   const elements = []
   for (const i of data) {
     switch (i.type) {
@@ -23,10 +23,11 @@ export function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem> 
         elements.push(segment.record(i.url || i.file.toString(), false))
         break
       case 'video': {
-        const url = bot.super.getVideoUrl(i.fid as string, i.md5 as string)
-        elements.push(segment.video(url!))
+        const url = (await bot.super.getVideoUrl(i.fid as string, i.md5 as string)) || ''
+        elements.push(segment.video(url))
         break
       }
+
       case 'at': {
         const qq = String(i.qq)
         elements.push(segment.at(qq, i.text))

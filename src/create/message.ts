@@ -8,7 +8,7 @@ import { GroupMessageEvent, PrivateMessageEvent } from 'icqq'
  * @param event - 消息事件
  * @param bot - Bot实例
  */
-export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bot: AdapterICQQ) => {
+export const createMessage = async (event: GroupMessageEvent | PrivateMessageEvent, bot: AdapterICQQ) => {
   const time = event.time
   if (event.message_type === 'private') {
     if (event.sub_type === 'friend') {
@@ -23,7 +23,7 @@ export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bo
         bot,
         messageId: String(event.message_id),
         messageSeq: event.seq,
-        elements: AdapterConvertKarin(bot, event.message),
+        elements: await AdapterConvertKarin(bot, event.message),
         contact,
         sender,
       })
@@ -42,7 +42,7 @@ export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bo
         bot,
         messageId: String(event.message_id),
         messageSeq: event.time,
-        elements: AdapterConvertKarin(bot, event.message),
+        elements: await AdapterConvertKarin(bot, event.message),
         contact,
         sender,
       })
@@ -65,7 +65,7 @@ export const createMessage = (event: GroupMessageEvent | PrivateMessageEvent, bo
       bot,
       messageId: String(event.message_id),
       messageSeq: event.time,
-      elements: AdapterConvertKarin(bot, event.message),
+      elements: await AdapterConvertKarin(bot, event.message),
       contact,
       sender,
     })

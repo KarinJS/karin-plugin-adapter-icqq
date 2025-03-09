@@ -1,14 +1,16 @@
+import { getIcqqLoginKey } from '@/tools/key'
+import { VerifyOptions } from '@/tools/types'
 import karin from 'node-karin'
 
 export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
   const msg = e.msg.replace(/^#qq验证/i, '').trim().split(':')
-  const data = {
+  const data: VerifyOptions = {
     msg: msg[1],
-    selfId: msg[0],
-    reply: (msg: string) => e.reply(msg, { at: true }),
     e
   }
-  karin.emit(`ICQQLogin.${data.selfId}`, data)
+
+  const key = getIcqqLoginKey(msg[0])
+  karin.emit(key, data)
 }, { name: 'ICQQ验证', perm: 'master', priority: -1 })
 
 export const OnlineOffline = karin.command(/^#qq(上|下)线.+$/i, async (e) => {
