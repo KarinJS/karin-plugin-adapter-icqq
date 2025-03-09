@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.5...v1.5.0) (2025-03-09)
+
+
+### Features
+
+* 添加ICQQ登录功能及相关事件处理 ([c96fe5d](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/c96fe5d82ede5a224c8eb44d9db505dea1cb4b4d))
+
 ## [1.4.5](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.4...v1.4.5) (2025-03-08)
 
 
