@@ -1,4 +1,4 @@
-import { MessageElem, segment as Segment } from 'icqq'
+import { genDmMessageId, genGroupMessageId, GroupMessageEvent, MessageElem, PrivateMessageEvent, segment as Segment } from 'icqq'
 import { Elements, segment, SendElement } from 'node-karin'
 import { AdapterICQQ } from './index'
 
@@ -6,9 +6,10 @@ import { AdapterICQQ } from './index'
  * icqq转Karin
  * @returns Karin格式消息
  */
-export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem> = []): Promise<Array<Elements>> {
+export async function AdapterConvertKarin (bot: AdapterICQQ, data: GroupMessageEvent | PrivateMessageEvent): Promise<Array<Elements>> {
   const elements = []
-  for (const i of data) {
+  if (data.source) data.message_type === 'group' ? elements.push(segment.reply(genGroupMessageId(data.group_id, data.sender.user_id, data.seq, data.rand, data.time, data.pktnum))) : elements.push(segment.reply(genDmMessageId(data.sender.user_id, data.seq, data.rand, data.time)))
+  for (const i of data.message) {
     switch (i.type) {
       case 'text':
         elements.push(segment.text(i.text))
@@ -35,9 +36,6 @@ export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<Message
       }
       case 'location':
         elements.push(segment.location(i.lat, i.lng, i.name || '', i.address || ''))
-        break
-      case 'reply':
-        elements.push(segment.reply(i.id))
         break
       case 'json':
         elements.push(segment.json(i.data))
