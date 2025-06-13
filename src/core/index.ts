@@ -188,7 +188,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     const res = await this.super.getMsg(messageId) as GroupMessage | PrivateMessage
     if (!res) throw TypeError('消息不存在')
     const userId = String(res.sender.user_id)
-    const elements = await AdapterConvertKarin(this, res.message)
+    const elements = await AdapterConvertKarin(this, res.message, contact, res.source)
     return {
       time: res.time,
       messageId: res.message_id,
@@ -243,7 +243,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
           role: 'role' in v.sender && ['owner', 'admin', 'member'].includes(v.sender.role) ? v.sender.role as Role : 'unknown',
           card: 'card' in v.sender ? v.sender.card : ''
         },
-        elements: await AdapterConvertKarin(this, v.message)
+        elements: await AdapterConvertKarin(this, v.message, contact, v.source)
       }
       all.push(data)
     }

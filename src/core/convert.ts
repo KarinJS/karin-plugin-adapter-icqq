@@ -1,15 +1,15 @@
-import { genDmMessageId, genGroupMessageId, GroupMessageEvent, MessageElem, PrivateMessageEvent, segment as Segment } from 'icqq'
-import { Elements, segment, SendElement } from 'node-karin'
+import { genDmMessageId, genGroupMessageId, MessageElem, Quotable, segment as Segment } from 'icqq'
+import { Contact, Elements, segment, SendElement } from 'node-karin'
 import { AdapterICQQ } from './index'
 
 /**
  * icqq转Karin
  * @returns Karin格式消息
  */
-export async function AdapterConvertKarin (bot: AdapterICQQ, data: GroupMessageEvent | PrivateMessageEvent): Promise<Array<Elements>> {
+export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem>, contact: Contact, source?: Quotable): Promise<Array<Elements>> {
   const elements = []
-  if (data.source) data.message_type === 'group' ? elements.push(segment.reply(genGroupMessageId(data.group_id, data.sender.user_id, data.seq, data.rand, data.time, data.pktnum))) : elements.push(segment.reply(genDmMessageId(data.sender.user_id, data.seq, data.rand, data.time)))
-  for (const i of data.message) {
+  if (source) contact.scene === 'group' ? elements.push(segment.reply(genGroupMessageId(Number(contact.peer), source.user_id, source.seq, source.rand, source.time))) : elements.push(segment.reply(genDmMessageId(source.user_id, source.seq, source.rand, source.time)))
+  for (const i of data) {
     switch (i.type) {
       case 'text':
         elements.push(segment.text(i.text))
