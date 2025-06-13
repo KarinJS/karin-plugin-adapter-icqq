@@ -39,10 +39,7 @@ jobs:
       - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
       # 安装jq工具 删除开发依赖
-      - run: sudo apt-get install jq && jq 'del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
-        if: ${{ steps.release.outputs.release_created }}
-      # 修改icqq版本为*
-      - run: npm run icqq
+      - run: sudo apt-get install jq && jq 'del(.devDependencies, .dependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
         if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: pnpm run pub

@@ -219,8 +219,8 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   // async sendLongMsg (contact: Contact, resId: string) {
   // }
 
-  async getHistoryMsg (contact: Contact, startMsgId: string, count: number) {
-    const res = await this.super.getChatHistory(startMsgId, count) as GroupMessage[] | PrivateMessage[]
+  async getHistoryMsg (contact: Contact, startMsgId: string | number, count: number) {
+    const res = await this.super.getChatHistory(String(startMsgId), count) as GroupMessage[] | PrivateMessage[]
     const all = []
     for (const v of res) {
       const userId = String(v.sender.user_id)
