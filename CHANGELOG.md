@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.0...v1.5.1) (2025-06-13)
+
+
+### Bug Fixes
+
+* 支持对回复消息的判断 ([fb21dcb](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/fb21dcbe7a95441638b1fe4f31597f76d21fcea7))
+
 ## [1.5.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.4.5...v1.5.0) (2025-03-09)
 
 
