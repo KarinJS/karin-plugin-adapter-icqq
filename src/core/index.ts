@@ -118,9 +118,11 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     }
 
     const message = await KarinConvertAdapter(this, elements)
-    const res = contact.scene === 'friend'
-      ? await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
-      : await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
+    const res = contact.scene === 'group'
+      ? await this.super.pickGroup(Number(contact.peer)).sendMsg(message)
+      : contact.scene === 'groupTemp'
+        ? await this.super.sendTempMsg(Number(contact.peer), Number(contact.subPeer), message)
+        : await this.super.pickFriend(Number(contact.peer)).sendMsg(message)
 
     result.messageId = res.message_id
     result.rawData = res
