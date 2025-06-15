@@ -18,7 +18,7 @@ export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<Message
         elements.push(segment.face(i.id))
         break
       case 'image':
-        elements.push(segment.image(i.url || i.file.toString()))
+        elements.push(segment.image(i.url || i.file.toString(), { summary: i.summary, height: i.height, width: i.width }))
         break
       case 'record':
         elements.push(segment.record(i.url || i.file.toString(), false))
@@ -73,11 +73,14 @@ export const KarinConvertAdapter = async (bot: AdapterICQQ, data: Array<SendElem
         elements.push(Segment.at(Number(i.targetId), i.name))
         break
       case 'reply':
-        // icqq没有制作回复的api
         elements.push({ type: 'reply', id: i.messageId })
         break
       case 'image': {
-        elements.push(Segment.image(i.file))
+        const img = Segment.image(i.file)
+        img.summary = i.summary
+        img.height = i.height
+        img.width = i.width
+        elements.push(img)
         break
       }
       case 'video': {
