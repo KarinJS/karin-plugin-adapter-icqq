@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.5](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.4...v1.5.5) (2025-06-15)
+
+
+### Bug Fixes
+
+* 添加图像摘要、高度和宽度支持 ([e1c2608](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/e1c260836590ca647399e075f957ca6a986b57dc))
+
 ## [1.5.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.3...v1.5.4) (2025-06-14)
 
 
