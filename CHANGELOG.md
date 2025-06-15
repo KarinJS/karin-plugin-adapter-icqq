@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.3...v1.5.4) (2025-06-14)
+
+
+### Bug Fixes
+
+* 添加发送群临时会话判断 ([2d4ce88](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/2d4ce8890246a0f9b6e9164266d8d45fadd7a5c7))
+
 ## [1.5.3](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.2...v1.5.3) (2025-06-13)
 
 
