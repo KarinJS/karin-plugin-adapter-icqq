@@ -24,23 +24,17 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
-        # 安装pnpm
-      - run: npm install pnpm -g
-        if: ${{ steps.release.outputs.release_created }}
-      # 安装依赖
-      - run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
-      # 添加node-karin开发依赖
-      - run: pnpm install node-karin@latest --save-dev
-        if: ${{ steps.release.outputs.release_created }}
+      # 设置 pnpm
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: true
       # 构建输出
       - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
-      # 安装jq工具 删除开发依赖
-      - run: sudo apt-get install jq && jq 'del(.devDependencies, .dependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
-        if: ${{ steps.release.outputs.release_created }}
+      # 删除开发依赖
+      - run: npm pkg delete devDependencies
       # 发布到 npm
       - run: pnpm run pub
         env:
