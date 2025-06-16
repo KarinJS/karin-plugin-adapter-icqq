@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.8](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.7...v1.5.8) (2025-06-16)
+
+
+### Bug Fixes
+
+* ci ([5496a35](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/5496a35e249d820be54fdf9643ff9e72b5ec35f7))
+* pnpm dev ([85ecb94](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/85ecb94d1564d356cbb4778d61b942dbb6f7d122))
+* 优化ci ([a8fa193](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/a8fa193cfc83c1ec4521e2363b9bad74bc935905))
+
 ## [1.5.7](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.6...v1.5.7) (2025-06-16)
 
 
