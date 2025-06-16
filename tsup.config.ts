@@ -2,7 +2,7 @@ import { builtinModules } from 'node:module'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/**.ts', 'src/apps/**.ts'], // 入口文件
+  entry: ['src/**.ts', 'src/apps/index.ts', 'src/apps/icqq.ts'], // 入口文件
   format: ['esm'], // 输出格式
   target: 'node18', // 目标环境
   platform: 'node',

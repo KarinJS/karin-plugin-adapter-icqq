@@ -15,7 +15,7 @@
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "karin": "karin",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/app.ts"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
