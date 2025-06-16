@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.6](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.5...v1.5.6) (2025-06-16)
+
+
+### Bug Fixes
+
+* 私聊消息回复id ([df2cf8f](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/df2cf8f283c45e00f0b29bcd863033dc55e0210c))
+
 ## [1.5.5](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.4...v1.5.5) (2025-06-15)
 
 
