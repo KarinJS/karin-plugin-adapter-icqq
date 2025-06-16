@@ -31,3 +31,4 @@ lerna-debug.log*
 node_modules/
 config/config/pm2.yaml
 src/qq.ts
+/dist

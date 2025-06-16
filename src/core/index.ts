@@ -222,9 +222,23 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   // }
 
   async getHistoryMsg (contact: Contact, startMsgId: string | number, count: number) {
-    const res = await this.super.getChatHistory(String(startMsgId), count) as GroupMessage[] | PrivateMessage[]
-    const all = []
-    for (const v of res) {
+    const result = await (async () => {
+      if (typeof startMsgId === 'string') {
+        return await this.super.getChatHistory(startMsgId, count)
+      } else {
+        if (contact.scene === 'group') {
+          return await this.super.pickGroup(+contact.peer).getChatHistory(startMsgId, count)
+        }
+
+        if (contact.scene === 'friend') {
+          return await this.super.pickFriend(+contact.peer).getChatHistory(startMsgId, count)
+        }
+
+        throw new Error('不支持的场景')
+      }
+    })()
+
+    const all = await Promise.all(result.map(async (v) => {
       const userId = String(v.sender.user_id)
       const messageId = v.message_id
       const messageSeq = v.seq
@@ -247,8 +261,9 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
         },
         elements: await AdapterConvertKarin(this, v.message, contact, v.source)
       }
-      all.push(data)
-    }
+      return data
+    }))
+
     return all
   }
 
