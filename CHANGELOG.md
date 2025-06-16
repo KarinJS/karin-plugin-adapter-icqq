@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.7](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.6...v1.5.7) (2025-06-16)
+
+
+### Bug Fixes
+
+* lock ([b17c134](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/b17c134d9efb14b336a94bd088d223900e8e02f8))
+* vscode ([18b548f](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/18b548f81f384363d221af89db26825f427982a6))
+* 修复对等依赖 `getHistoryMsg` 接口允许传递`seq`、`time` ([9be8a33](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/9be8a332bc23979418d4ba97e69044c6b7d4a2d8))
+
 ## [1.5.6](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.5...v1.5.6) (2025-06-16)
 
 
