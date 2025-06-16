@@ -23,7 +23,7 @@ export const createMessage = async (event: GroupMessageEvent | PrivateMessageEve
         bot,
         messageId: String(event.message_id),
         messageSeq: event.seq,
-        elements: await AdapterConvertKarin(bot, event.message, contact),
+        elements: await AdapterConvertKarin(bot, event.message, contact, event.source),
         contact,
         sender,
       })

@@ -1,4 +1,4 @@
-import { genDmMessageId, genGroupMessageId, MessageElem, Quotable, segment as Segment } from 'icqq'
+import { genGroupMessageId, MessageElem, Quotable, segment as Segment } from 'icqq'
 import { Contact, Elements, segment, SendElement } from 'node-karin'
 import { AdapterICQQ } from './index'
 
@@ -8,7 +8,11 @@ import { AdapterICQQ } from './index'
  */
 export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<MessageElem>, contact: Contact, source?: Quotable): Promise<Array<Elements>> {
   const elements = []
-  if (source) contact.scene === 'group' ? elements.push(segment.reply(genGroupMessageId(Number(contact.peer), source.user_id, source.seq, source.rand, source.time))) : elements.push(segment.reply(genDmMessageId(source.user_id, source.seq, source.rand, source.time)))
+  if (source) {
+    contact.scene === 'group'
+      ? elements.push(segment.reply(genGroupMessageId(Number(contact.peer), source.user_id, source.seq, source.rand, source.time)))
+      : elements.push(segment.reply((await bot.super.pickFriend(Number(contact.peer)).getChatHistory((source.time), 1))[0].message_id))
+  }
   for (const i of data) {
     switch (i.type) {
       case 'text':
