@@ -30,11 +30,13 @@ jobs:
         with:
           version: 9
           run_install: true
+        if: ${{ steps.release.outputs.release_created }}
       # 构建输出
       - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
       # 删除开发依赖
       - run: npm pkg delete devDependencies
+        if: ${{ steps.release.outputs.release_created }}
       # 发布到 npm
       - run: pnpm run pub
         env:
