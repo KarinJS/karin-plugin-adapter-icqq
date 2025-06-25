@@ -27,6 +27,8 @@ jobs:
       # 设置 pnpm
       - name: 设置 pnpm
         uses: pnpm/action-setup@v2
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         with:
           version: 9
           run_install: true
