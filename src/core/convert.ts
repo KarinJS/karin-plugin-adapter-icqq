@@ -22,7 +22,7 @@ export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<Message
         elements.push(segment.face(i.id))
         break
       case 'image':
-        elements.push(segment.image(i.url || i.file.toString(), { summary: i.summary, height: i.height, width: i.width }))
+        elements.push(segment.image(i.url || i.file.toString(), { summary: i.summary, height: i.height, width: i.width, fid: String(i.fid), md5: i.md5 }))
         break
       case 'record':
         elements.push(segment.record(i.url || i.file.toString(), false))
