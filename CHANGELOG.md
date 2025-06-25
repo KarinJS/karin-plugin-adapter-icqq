@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.10](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.9...v1.5.10) (2025-06-25)
+
+
+### Bug Fixes
+
+* 删除多余文件 ([06bf1d8](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/06bf1d8794f523eeeb17b3a6e6e7a23d12878658))
+
 ## [1.5.9](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.8...v1.5.9) (2025-06-25)
 
 
