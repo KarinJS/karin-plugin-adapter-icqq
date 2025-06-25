@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.11](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.10...v1.5.11) (2025-06-25)
+
+
+### Bug Fixes
+
+* 添加pnpm相关文件到.gitignore ([1cc09a5](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/1cc09a5eca681e80c5f21008ab45940432544873))
+
 ## [1.5.10](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.9...v1.5.10) (2025-06-25)
 
 
