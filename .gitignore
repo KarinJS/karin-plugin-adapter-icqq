@@ -1,6 +1,8 @@
 # 包管理器文件
 yarn.lock
 package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
 
 # 包管理器日志
 npm-debug.log*
