@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.13](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.12...v1.5.13) (2025-06-28)
+
+
+### Bug Fixes
+
+* 更新依赖项并优化插件目录路径解析逻辑 ([a18bc5b](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/a18bc5b540a59c5c0f942ecf78edaed73babb27c))
+
 ## [1.5.12](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.11...v1.5.12) (2025-06-25)
 
 
