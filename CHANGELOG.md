@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.14](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.13...v1.5.14) (2025-06-28)
+
+
+### Bug Fixes
+
+* 更新配置路径以使用新的karinPathBase并导出主函数 ([fe3aabf](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/fe3aabff82675ca43802588cd13368888a75d614))
+
 ## [1.5.13](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.12...v1.5.13) (2025-06-28)
 
 
