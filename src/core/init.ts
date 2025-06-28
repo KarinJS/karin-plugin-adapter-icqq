@@ -1,6 +1,6 @@
 import { AdapterICQQ } from './index'
 import { createRequire } from 'module'
-import { basePath, existsSync, mkdirSync, requireFileSync } from 'node-karin'
+import { existsSync, karinPathBase, mkdirSync, requireFileSync } from 'node-karin'
 import { ConfigType, dirPath } from '@/imports'
 import fs from 'fs'
 import path from 'path'
@@ -8,7 +8,7 @@ import path from 'path'
 // 初始化配置文件
 export const pkg = () => requireFileSync(`${dirPath}/package.json`)
 const pluginName = pkg().name.replace(/\//g, '-')
-const cfgPath = `${basePath}/${pluginName}/config/config.json`
+const cfgPath = `${karinPathBase}/${pluginName}/config/config.json`
 const config = {
   sign_api_addr: 'sign地址',
   list: []
@@ -18,7 +18,7 @@ if (!existsSync(cfgPath)) {
   fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2), 'utf8')
 }
 
-async function main () {
+export async function main () {
   const data = requireFileSync(cfgPath) as ConfigType
 
   if (!Array.isArray(data.list)) return
@@ -40,10 +40,8 @@ async function main () {
 
   data.list.forEach(v => {
     if (!v.cfg.sign_api_addr) v.cfg.sign_api_addr = data.sign_api_addr || ''
-    v.cfg.data_dir = `${basePath}/${pluginName}/data/${v.qq}`
+    v.cfg.data_dir = `${karinPathBase}/${pluginName}/data/${v.qq}`
     Object.assign(v.cfg, tmp)
     new AdapterICQQ(v, pack.version as string).init(v)
   })
 }
-
-main()
