@@ -1,8 +1,5 @@
 import {
-  Client,
   segment as Segment,
-  GroupMessage,
-  PrivateMessage,
   genGroupMessageId,
   FriendInfo,
   GroupInfo,
@@ -23,6 +20,9 @@ import {
   GroupSender,
   senderGroup,
   SendMsgResults,
+  contactFriend,
+  contactGroup,
+  contactGroupTemp,
 } from 'node-karin'
 import type { Message } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
@@ -30,12 +30,13 @@ import axios from 'node-karin/axios'
 import { sendToAllAdmin, CfgType } from '@/imports'
 import { createMessage, createNoice, createRequest } from '@/create'
 import { Login } from './login'
+import { ICQQClient } from './Client'
 
 /**
  * - ICQQ适配器
  */
 export class AdapterICQQ extends AdapterBase implements AdapterType {
-  super: Client
+  super: ICQQClient
   constructor (bot: CfgType, version: string) {
     super()
     const selfId = String(bot.qq)
@@ -51,7 +52,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     this.adapter.standard = 'icqq'
     this.adapter.protocol = 'icqq'
     this.adapter.communication = 'other'
-    this.super = new Client(bot.cfg)
+    this.super = new ICQQClient(bot.cfg)
   }
 
   async init (bot: CfgType, e?: Message) {
@@ -153,9 +154,9 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
 
   async recallMsg (contact: Contact, message_id: string) {
     if (contact.scene === 'friend') {
-      return await this.super.pickFriend(Number(contact.peer)).recallMsg(message_id)
+      await this.super.pickFriend(Number(contact.peer)).recallMsg(message_id)
     }
-    return await this.super.pickGroup(Number(contact.peer)).recallMsg(message_id)
+    await this.super.pickGroup(Number(contact.peer)).recallMsg(message_id)
   }
 
   async sendForwardMsg (contact: Contact, elements: NodeElement[]) {
@@ -186,10 +187,18 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     return result
   }
 
-  async getMsg (contact: Contact, messageId: string) {
-    const res = await this.super.getMsg(messageId) as GroupMessage | PrivateMessage
-    if (!res) throw TypeError('消息不存在')
+  async getMsg (arg1: Contact | string, arg2?: string) {
+    const message = await this.super.getMsg(typeof arg1 === 'string' ? arg1 : arg2!)
+    if (!message) throw TypeError('消息不存在')
+    const res = message
     const userId = String(res.sender.user_id)
+    const contact: Contact = typeof arg1 === 'string'
+      ? res.message_type === 'group' && res.sub_type === 'normal'
+        ? contactGroup(String(res.group_id))
+        : res.message_type === 'private'
+          ? contactFriend(userId)
+          : contactGroupTemp(String(res.group_id), userId)
+      : arg1
     const elements = await AdapterConvertKarin(this, res.message, contact, res.source)
     return {
       time: res.time,
@@ -197,12 +206,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       message_id: res.message_id,
       message_seq: res.seq,
       messageSeq: res.seq,
-      contact: {
-        scene: res.message_type === 'group' ? 'group' as const : 'friend' as const,
-        peer: contact.peer,
-        sub_peer: null,
-        name: ''
-      },
+      contact,
       sender: {
         userId,
         uid: userId,
@@ -333,40 +337,39 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async sendLike (targetId: string, count: number) {
-    return await this.super.sendLike(Number(targetId), count)
+    await this.super.sendLike(Number(targetId), count)
   }
 
   async groupKickMember (groupId: string, targetId: string, rejectAddRequest?: boolean | undefined, kickReason?: string | undefined) {
-    return await this.super.pickGroup(Number(groupId)).kickMember(Number(targetId), kickReason, rejectAddRequest)
+    await this.super.pickGroup(Number(groupId)).kickMember(Number(targetId), kickReason, rejectAddRequest)
   }
 
   async setGroupMute (groupId: string, targetId: string, duration: number) {
-    return await this.super.pickGroup(Number(groupId)).muteMember(Number(targetId), duration)
+    await this.super.pickGroup(Number(groupId)).muteMember(Number(targetId), duration)
   }
 
   async setGroupAllMute (groupId: string, isBan: boolean) {
-    return await this.super.pickGroup(Number(groupId)).muteAll(isBan)
+    await this.super.pickGroup(Number(groupId)).muteAll(isBan)
   }
 
   async setGroupAdmin (groupId: string, targetId: string, isAdmin: boolean) {
-    return await this.super.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
+    await this.super.setGroupAdmin(Number(groupId), Number(targetId), isAdmin)
   }
 
   async setGroupMemberCard (groupId: string, targetId: string, card: string) {
-    return await this.super.setGroupCard(Number(groupId), Number(targetId), card)
+    await this.super.setGroupCard(Number(groupId), Number(targetId), card)
   }
 
   async setGroupName (groupId: string, groupName: string) {
-    return await this.super.pickGroup(Number(groupId)).setName(groupName)
+    await this.super.pickGroup(Number(groupId)).setName(groupName)
   }
 
   async setGroupQuit (groupId: string, isDismiss: boolean) {
-    if (isDismiss) return await this.super.pickGroup(Number(groupId)).quit()
-    return false
+    if (isDismiss) await this.super.pickGroup(Number(groupId)).quit()
   }
 
   async setGroupMemberTitle (groupId: string, targetId: string, title: string) {
-    return await this.super.pickGroup(Number(groupId)).setTitle(Number(targetId), title)
+    await this.super.pickGroup(Number(groupId)).setTitle(Number(targetId), title)
   }
 
   async getStrangerInfo (targetId: string) {
@@ -502,15 +505,15 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   // }
 
   async setFriendApplyResult (requestId: string, isApprove: boolean, remark?: string | undefined) {
-    return await this.super.setFriendAddRequest(requestId, isApprove, remark)
+    await this.super.setFriendAddRequest(requestId, isApprove, remark)
   }
 
   async setGroupApplyResult (requestId: string, isApprove: boolean, denyReason?: string | undefined) {
-    return await this.super.setGroupAddRequest(requestId, isApprove, denyReason)
+    await this.super.setGroupAddRequest(requestId, isApprove, denyReason)
   }
 
   async setInvitedJoinGroupResult (requestId: string, isApprove: boolean) {
-    return await this.super.setGroupAddRequest(requestId, isApprove)
+    await this.super.setGroupAddRequest(requestId, isApprove)
   }
 
   async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
@@ -525,9 +528,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       } else {
         await this.super.pickFriend(Number(contact.peer)).sendFile(file, name)
       }
-      return true
     } catch {
-      return false
     }
   }
 

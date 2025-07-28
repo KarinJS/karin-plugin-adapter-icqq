@@ -1,5 +1,65 @@
 const mobile = [
   {
+    name: 'A9.2.0.0a244d9a',
+    version: '9.2.0.28325',
+    ver: '9.2.0',
+    subid: 537303052,
+    apad_subid: 537303091,
+    qua: 'V1_AND_SQ_9.2.0_10970_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2584',
+    buildtime: 1751448568,
+    ssover: 22
+  },
+  {
+    name: 'A9.1.97.b351e214',
+    version: '9.1.97.27900',
+    ver: '9.1.97',
+    subid: 537301750,
+    apad_subid: 537301789,
+    qua: 'V1_AND_SQ_9.1.97_10800_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2582',
+    buildtime: 1748422598,
+    ssover: 22
+  },
+  {
+    name: 'A9.1.95.1eed49c0',
+    version: '9.1.95.27050',
+    ver: '9.1.95',
+    subid: 537297272,
+    apad_subid: 537297311,
+    qua: 'V1_AND_SQ_9.1.95_10460_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2582',
+    buildtime: 1748422598,
+    ssover: 22
+  },
+  {
+    name: 'A9.1.92.cb84b334',
+    version: '9.1.92.26650',
+    ver: '9.1.92',
+    subid: 537294996,
+    apad_subid: 537295035,
+    qua: 'V1_AND_SQ_9.1.92_10300_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2581',
+    buildtime: 1747820974,
+    ssover: 22
+  },
+  {
+    name: 'A9.1.91.304e0cba',
+    version: '9.1.91.26645',
+    ver: '9.1.91',
+    subid: 537294918,
+    apad_subid: 537294957,
+    qua: 'V1_AND_SQ_9.1.91_10298_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2581',
+    buildtime: 1747820974,
+    ssover: 22
+  },
+  {
     name: 'A9.1.90.58326526',
     ersion: '9.1.90.26625',
     ver: '9.1.90',
@@ -690,6 +750,19 @@ const mobile = [
   ...e
 }))
 const tim = [
+  {
+    nt: true,
+    name: 'A4.1.0.e4e0ee28',
+    version: '4.1.0.4050',
+    ver: '4.1.0',
+    subid: 537298353,
+    apad_subid: 537298411,
+    qua: 'V1_AND_SQ_9.0.95_4050_TIM_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2563',
+    buildtime: 1724313621,
+    ssover: 22
+  },
   {
     nt: !0,
     name: 'A4.0.99.dc92ee7f',
