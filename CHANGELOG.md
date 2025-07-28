@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.15](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.14...v1.5.15) (2025-07-28)
+
+
+### Bug Fixes
+
+* 更新依赖项并重构ICQQ适配器以使用新的ICQQClient类 ([5a75bcc](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/5a75bccbe797d9cceb76fff4770aa332e517e069))
+
 ## [1.5.14](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.13...v1.5.14) (2025-06-28)
 
 
