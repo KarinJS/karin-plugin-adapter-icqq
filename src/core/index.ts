@@ -71,15 +71,15 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       sendToAllAdmin(`[${this.selfId}]账号下线:\n${event.message}\n发送#QQ上线${this.selfId} 重新登陆`)
     })
 
-    this.super.on('message', async (data: any) => {
+    this.super.on('message', async (data) => {
       createMessage(data, this)
     })
 
-    this.super.on('notice', async (data: any) => {
+    this.super.on('notice', async (data) => {
       createNoice(data, this)
     })
 
-    this.super.on('request', async (data: any) => {
+    this.super.on('request', async (data) => {
       createRequest(data, this)
     })
 

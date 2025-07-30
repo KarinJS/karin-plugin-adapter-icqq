@@ -1,14 +1,14 @@
 import { contactFriend, contactGroup, contactGroupTemp, createFriendMessage, createGroupMessage, createGroupTempMessage, logger, senderFriend, senderGroup } from 'node-karin'
 import { AdapterConvertKarin } from '@/core/convert'
 import { AdapterICQQ } from '@/core'
-import { GroupMessageEvent, PrivateMessageEvent } from 'icqq'
+import { DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent } from 'icqq'
 
 /**
  * 创建消息事件
  * @param event - 消息事件
  * @param bot - Bot实例
  */
-export const createMessage = async (event: GroupMessageEvent | PrivateMessageEvent, bot: AdapterICQQ) => {
+export const createMessage = async (event: GroupMessageEvent | PrivateMessageEvent | DiscussMessageEvent, bot: AdapterICQQ) => {
   const time = event.time
   if (event.message_type === 'private') {
     if (event.sub_type === 'friend') {
