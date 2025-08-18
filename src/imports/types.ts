@@ -1,4 +1,6 @@
 export interface CfgType {
+  /** 是否启用账号 */
+  enable: boolean
   /** QQ号 */
   qq: number
   /** 密码 */

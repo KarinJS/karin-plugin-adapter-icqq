@@ -39,6 +39,7 @@ export async function main () {
   }
 
   data.list.forEach(v => {
+    if (!v.enable) return
     if (!v.cfg.sign_api_addr) v.cfg.sign_api_addr = data.sign_api_addr || ''
     v.cfg.data_dir = `${karinPathBase}/${pluginName}/data/${v.qq}`
     Object.assign(v.cfg, tmp)

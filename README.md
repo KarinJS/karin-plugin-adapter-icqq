@@ -38,6 +38,7 @@ pnpm add @karinjs/adapter-icqq -w
   "sign_api_addr": "签名地址", // 默认签名地址
   "list": [
     {
+      "enable": true, // 是否启用该账号
       "qq": 114514, // QQ账号
       "password": "114514", // QQ密码，为空则扫码登录
       "cfg": {

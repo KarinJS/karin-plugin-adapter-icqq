@@ -4,7 +4,8 @@ import {
   FriendInfo,
   GroupInfo,
   MemberInfo,
-  parseGroupMessageId
+  parseGroupMessageId,
+  Domain
 } from 'icqq'
 import {
   registerBot,
@@ -530,6 +531,14 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
       }
     } catch {
     }
+  }
+
+  async getCookies (domain: Domain): Promise<{ cookie: string }> {
+    return { cookie: this.super.cookies[domain] || '' }
+  }
+
+  async getCSRFToken (): Promise<{ token: number }> {
+    return { token: this.super.bkn }
   }
 
   // 先暂时不写
