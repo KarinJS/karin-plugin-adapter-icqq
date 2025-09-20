@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.17](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.16...v1.5.17) (2025-09-20)
+
+
+### Bug Fixes
+
+* cmd ([16af724](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/16af724b364d2e2f217fe9b102a09739c4900568))
+* 添加禁用账号 ([73f708e](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/73f708eee08fef00693ec63f8f2ce9130cee2948))
+
 ## [1.5.16](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.15...v1.5.16) (2025-07-30)
 
 
