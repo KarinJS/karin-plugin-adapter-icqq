@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.18](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.17...v1.5.18) (2025-09-20)
+
+
+### Bug Fixes
+
+* 下线回调函数类型 ([d1e66bd](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/d1e66bd2b925381bed8608837be88f4cd982ccdd))
+
 ## [1.5.17](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.16...v1.5.17) (2025-09-20)
 
 
