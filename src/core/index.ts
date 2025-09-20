@@ -67,9 +67,9 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
 
     /** 监听掉线 掉线后卸载bot并发送消息到所有主人 */
-    this.super.on('system.offline', (event: { message: string }) => {
+    this.super.on('system.offline', (event: { message?: string }) => {
       unregisterBot('index', this.adapter.index)
-      sendToAllAdmin(`[${this.selfId}]账号下线:\n${event.message}\n发送#QQ上线${this.selfId} 重新登陆`)
+      sendToAllAdmin(`[${this.selfId}]账号下线:\n${event?.message}\n发送#QQ上线${this.selfId} 重新登陆`)
     })
 
     this.super.on('message', async (data) => {
