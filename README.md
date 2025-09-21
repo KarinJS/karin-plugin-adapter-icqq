@@ -22,7 +22,15 @@ Password: # 前往 https://github.com/settings/tokens/new  获取，scopes勾选
 E-Mail: # 你的公开邮箱地址
 ```
 
-3. 安装插件
+3. 安装icqq依赖
+
+在Karin根目录执行下方命令
+
+```bash
+pnpm add icqq@npm:@icqqjs/icqq -w
+```
+
+4. 安装插件
 
 ```bash
 pnpm add @karinjs/adapter-icqq -w
