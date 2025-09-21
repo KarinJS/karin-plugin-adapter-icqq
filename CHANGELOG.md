@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.19...v1.6.0) (2025-09-21)
+
+
+### Features
+
+* 重构配置管理，更新依赖，更新设备信息，优化设备信息列表函数替换 ([5fae117](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/5fae1170798fed75b5d42afeb731e2722163b10d))
+
 ## [1.5.19](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.18...v1.5.19) (2025-09-20)
 
 
