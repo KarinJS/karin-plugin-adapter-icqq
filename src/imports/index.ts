@@ -1,3 +1,2 @@
-export * from './dir'
+export * from './Root'
 export * from './common'
-export * from './types'

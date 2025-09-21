@@ -1,34 +1,15 @@
 import { AdapterICQQ } from './index'
 import { createRequire } from 'module'
-import { existsSync, karinPathBase, mkdirSync, requireFileSync } from 'node-karin'
-import { ConfigType, dirPath } from '@/imports'
-import fs from 'fs'
-import path from 'path'
+import { karinPathBase } from 'node-karin'
+import { Config } from '@/config'
+import { Root } from '@/imports'
 
-// 初始化配置文件
-export const pkg = () => requireFileSync(`${dirPath}/package.json`)
-const pluginName = pkg().name.replace(/\//g, '-')
-const cfgPath = `${karinPathBase}/${pluginName}/config/config.json`
-const config = {
-  sign_api_addr: 'sign地址',
-  list: []
-}
-if (!existsSync(cfgPath)) {
-  mkdirSync(path.dirname(cfgPath))
-  fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2), 'utf8')
-}
-
-export async function main () {
-  const data = requireFileSync(cfgPath) as ConfigType
-
-  if (!Array.isArray(data.list)) return
-
+export function main () {
   const tmp = {
     log_level: 'warn',
     ffmpeg_path: process.env.FFMPEG_PATH,
     ffprobe_path: process.env.FFPROBE_PATH,
   }
-
   const require = createRequire(import.meta.url)
 
   let pack
@@ -37,12 +18,12 @@ export async function main () {
   } catch {
     pack = require('icqq/package.json')
   }
-
-  data.list.forEach(v => {
-    if (!v.enable) return
-    if (!v.cfg.sign_api_addr) v.cfg.sign_api_addr = data.sign_api_addr || ''
-    v.cfg.data_dir = `${karinPathBase}/${pluginName}/data/${v.qq}`
+  Config.getConfig.list.forEach(v => {
+    if (!v.cfg.sign_api_addr) v.cfg.sign_api_addr = Config.getConfig.sign_api_addr || ''
+    v.cfg.data_dir = `${karinPathBase}/${Root.pluginName.replace(/\//g, '-')}/data/${v.qq}`
     Object.assign(v.cfg, tmp)
     new AdapterICQQ(v, pack.version as string).init(v)
   })
 }
+
+main()

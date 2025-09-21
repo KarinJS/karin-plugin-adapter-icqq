@@ -28,10 +28,11 @@ import {
 import type { Message } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
-import { sendToAllAdmin, CfgType } from '@/imports'
+import { sendToAllAdmin } from '@/imports'
 import { createMessage, createNoice, createRequest } from '@/create'
 import { Login } from './login'
 import { ICQQClient } from './Client'
+import { CfgType } from '@/config'
 
 /**
  * - ICQQ适配器
@@ -41,18 +42,30 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   constructor (bot: CfgType, version: string) {
     super()
     const selfId = String(bot.qq)
-    this.account.uid = selfId
-    this.account.uin = selfId
-    this.account.name = ''
-    this.account.selfId = selfId
-    this.account.avatar = `https://q1.qlogo.cn/g?b=qq&s=0&nk=${selfId}`
-    this.adapter.name = 'ICQQ'
-    this.adapter.index = 0
-    this.adapter.version = version
-    this.adapter.platform = 'qq'
-    this.adapter.standard = 'icqq'
-    this.adapter.protocol = 'icqq'
-    this.adapter.communication = 'other'
+    this.account = {
+      uin: selfId,
+      uid: selfId,
+      selfId,
+      name: '',
+      avatar: `https://q1.qlogo.cn/g?b=qq&s=0&nk=${selfId}`,
+      subId: {
+        guild: '',
+        channel: '',
+        user: ''
+      }
+    }
+    this.adapter = {
+      index: 0,
+      name: 'ICQQ',
+      version,
+      platform: 'qq',
+      standard: 'icqq',
+      protocol: 'icqq',
+      communication: 'other',
+      address: '',
+      connectTime: 0,
+      secret: null
+    }
     this.super = new ICQQClient(bot.cfg)
   }
 
@@ -67,7 +80,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
 
     /** 监听掉线 掉线后卸载bot并发送消息到所有主人 */
-    this.super.on('system.offline', (event?: { message: string }) => {
+    this.super.on('system.offline', (event) => {
       unregisterBot('index', this.adapter.index)
       sendToAllAdmin(`[${this.selfId}]账号下线:\n${event?.message}\n发送#QQ上线${this.selfId} 重新登陆`)
     })
@@ -85,16 +98,16 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     })
 
     /** 扫码登录 */
-    this.super.on('system.login.qrcode', (event: { image: Buffer<ArrayBufferLike> }) => login.qrcode(event.image, this))
+    this.super.on('system.login.qrcode', (event) => login.qrcode(event.image, this))
 
     /** 遇到滑动验证码(滑块) */
-    this.super.on('system.login.slider', (event: { url: string }) => login.slider(event.url, this))
+    this.super.on('system.login.slider', (event) => login.slider(event.url, this))
 
     /** 遇到短信验证码(包含真假设备锁) */
-    this.super.on('system.login.device', (event: { url: string; phone: string }) => login.device(event, this))
+    this.super.on('system.login.device', (event) => login.device(event, this))
 
     /** 遇到登录错误的信息 */
-    this.super.on('system.login.error', (event: { code: any; message: any }) => {
+    this.super.on('system.login.error', (event) => {
       this.logger('error', `[登录错误] 错误代码: ${event.code}`)
       this.logger('error', `[登录失败] 错误信息: ${event.message}`)
     })

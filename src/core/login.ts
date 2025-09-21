@@ -4,7 +4,6 @@ import { AdapterICQQ } from './index'
 import WebSocket from 'node-karin/ws'
 import { sendToAllAdmin } from '@/imports'
 import type { Message, SendMessage } from 'node-karin'
-import { getIcqqLoginKey } from '@/tools/key'
 import { logger, karin, segment, common } from 'node-karin'
 import type { VerifyOptions } from '@/tools/types'
 
@@ -14,15 +13,15 @@ export class Login {
   sendMsg: any
   constructor (e: Message | undefined) {
     this.e = e
-    this.sendMsg = this.e ? (msg: SendMessage) => this.e!.reply(msg, { at: true }) : sendToAllAdmin
+    this.sendMsg = this.e ? (msg: SendMessage) => this.e!.reply(msg, { reply: true }) : sendToAllAdmin
   }
 
   async events (id: number | string): Promise<string> {
     return new Promise(resolve => {
-      const key = getIcqqLoginKey(id)
+      const key = `ICQQLogin:${id}`
       karin.once(key, (data: VerifyOptions) => {
         this.e = data.e
-        this.sendMsg = (msg: SendMessage) => this.e!.reply(msg, { at: true })
+        this.sendMsg = (msg: SendMessage) => this.e!.reply(msg, { reply: true })
         resolve(data.msg)
       })
     })
@@ -35,12 +34,12 @@ export class Login {
  * @param sendMsg 发送消息函数
  */
   async slider (url: string, bot: AdapterICQQ) {
-    const sendMsg = this.e ? (msg: SendMessage) => this.e!.reply(msg, { at: true }) : sendToAllAdmin
+    const sendMsg = this.e ? (msg: SendMessage) => this.e!.reply(msg, { reply: true }) : sendToAllAdmin
     sendMsg([
       `[${bot.account.selfId}]触发滑块验证码,请选择验证方式:`,
       `网页验证: #QQ验证${bot.account.selfId}:网页`,
       `手动验证: #QQ验证${bot.account.selfId}:ticket`,
-      '手动验证请将ticket替换为你自己获取的ticket',
+      '如果手动验证，请将<ticket>这几个字母删掉替换为你自己获取的ticket,例如#QQ验证12345:abcdefg',
       url
     ].join('\n'))
 

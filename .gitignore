@@ -18,12 +18,12 @@ lerna-debug.log*
 /logs/
 /temp/
 /lib
+/src/apps/test.ts
 
 # 配置
 /plugins/
 /data/
 /config/config
-/resources
 .env
 @karinjs/
 

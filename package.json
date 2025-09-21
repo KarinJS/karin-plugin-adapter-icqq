@@ -20,14 +20,14 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.1.0",
-    "eslint": "^9.32.0",
-    "icqq": "npm:@icqqjs/icqq@^1.7.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.35.0",
+    "icqq": "npm:@icqqjs/icqq@^1.7.2",
     "neostandard": "^0.12.2",
-    "node-karin": "^1.10.20",
+    "node-karin": "^1.10.23",
     "tsup": "^8.5.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
   },
   "peerDependencies": {
     "icqq": ">=0.6.10"
@@ -51,11 +51,6 @@
     ],
     "apps": [
       "dist/apps"
-    ],
-    "files": [
-      "config",
-      "data",
-      "resources"
     ],
     "include": [
       "src/**/*"

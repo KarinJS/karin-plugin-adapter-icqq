@@ -1,4 +1,45 @@
-const mobile = [
+import { Apk } from 'icqq'
+
+export const mobile: Apk[] = [
+  {
+    name: 'A9.2.10.fad8a0d9',
+    version: '9.2.10.29175',
+    ver: '9.2.10',
+    subid: 537309838,
+    apad_subid: 537309877,
+    qua: 'V1_AND_SQ_9.2.10_11310_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2587',
+    buildtime: 1754919788,
+    ssover: 22,
+    fekit_ver: '8.407.888'
+  },
+  {
+    name: 'A9.2.5.2c3ad708',
+    version: '9.2.5.28755',
+    ver: '9.2.5',
+    subid: 537306612,
+    apad_subid: 537306651,
+    qua: 'V1_AND_SQ_9.2.5_11142_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2585',
+    buildtime: 1752744019,
+    ssover: 22,
+    fekit_ver: '8.406.883',
+  },
+  {
+    name: 'A9.2.5.6039dd6b',
+    version: '9.2.5.28750',
+    ver: '9.2.5',
+    subid: 537306534,
+    apad_subid: 537306573,
+    qua: 'V1_AND_SQ_9.2.5_11140_YYB_D',
+    channel: 'GuanWang',
+    sdkver: '6.0.0.2585',
+    buildtime: 1752744019,
+    ssover: 22,
+    fekit_ver: '8.406.883',
+  },
   {
     name: 'A9.2.0.0a244d9a',
     version: '9.2.0.28325',
@@ -61,7 +102,7 @@ const mobile = [
   },
   {
     name: 'A9.1.90.58326526',
-    ersion: '9.1.90.26625',
+    version: '9.1.90.26625',
     ver: '9.1.90',
     subid: 537294606,
     apad_subid: 537294645,
@@ -249,7 +290,7 @@ const mobile = [
     ssover: 22
   }, {
     name: 'A9.1.20.fa404fa6',
-    ersion: '9.1.20.21395',
+    version: '9.1.20.21395',
     ver: '9.1.20',
     subid: 537257414,
     apad_subid: 537257453,
@@ -746,10 +787,12 @@ const mobile = [
   main_sig_map: 16724722,
   sub_sig_map: 66560,
   display: 'Android',
-  device_type: 3,
+  device_type: -1,
+  bitmap: 0x08f7ff7c,
+  client_ver: 0,
   ...e
 }))
-const tim = [
+export const tim: Apk[] = [
   {
     nt: true,
     name: 'A4.1.0.e4e0ee28',
@@ -761,7 +804,7 @@ const tim = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2563',
     buildtime: 1724313621,
-    ssover: 22
+    ssover: 22,
   },
   {
     nt: !0,
@@ -888,9 +931,11 @@ const tim = [
   sub_sig_map: 66560,
   display: 'Tim',
   device_type: -1,
+  bitmap: 150470524,
+  client_ver: 0,
   ...e
 }))
-const watch = [
+export const watch: Apk[] = [
   {
     name: 'Atestrevision',
     version: '2.0.8',
@@ -952,9 +997,11 @@ const watch = [
   sub_sig_map: 66560,
   display: 'Watch',
   device_type: 8,
+  // bitmap: 150470524,
+  client_ver: 0,
   ...e
 }))
-const hd = {
+export const hd: Apk = {
   id: 'com.tencent.qq',
   app_key: '0S200MNJT807V3GE',
   name: 'A6.8.2.21241',
@@ -972,16 +1019,4 @@ const hd = {
   device_type: 5,
   qua: '',
   ssover: 12
-}
-const apklist = {
-  1: mobile,
-  6: tim,
-  2: mobile.map(e => ({ ...e, subid: e?.apad_subid || e.subid, display: e?.apad_subid ? 'aPad' : e.display })),
-  3: watch,
-  4: hd,
-  5: { ...mobile[0], id: 'com.tencent.mqq', subid: 537155074, sign: hd.sign, name: '8.9.50.611', version: '8.9.50.611', ver: '8.9.50', sdkver: '6.0.0.2535', qua: '', display: 'iPad', ssover: 19 }
-}
-export function getApkInfoList (e: 1 | 2 | 3 | 4 | 5 | 6) {
-  const apkData = apklist[e]
-  return Array.isArray(apkData) ? apkData : [apkData]
 }

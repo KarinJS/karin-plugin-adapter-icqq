@@ -1,4 +1,3 @@
-import { getIcqqLoginKey } from '@/tools/key'
 import { VerifyOptions } from '@/tools/types'
 import karin from 'node-karin'
 
@@ -9,7 +8,7 @@ export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
     e
   }
 
-  const key = getIcqqLoginKey(msg[0])
+  const key = `ICQQLogin:${msg[0]}`
   karin.emit(key, data)
 }, { name: 'ICQQ验证', perm: 'master', priority: -1 })
 
