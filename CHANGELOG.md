@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.6.0...v1.6.1) (2025-09-21)
+
+
+### Bug Fixes
+
+* 修复路径判断错误 ([1a359bc](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/1a359bc90699278f6539c2b14b71174fd24011f3))
+
 ## [1.6.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.5.19...v1.6.0) (2025-09-21)
 
 
