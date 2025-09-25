@@ -1,11 +1,10 @@
 import {
   segment as Segment,
-  genGroupMessageId,
   FriendInfo,
   GroupInfo,
   MemberInfo,
-  parseGroupMessageId,
-  Domain
+  Domain,
+  GroupMessage
 } from 'icqq'
 import {
   registerBot,
@@ -307,7 +306,8 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     const res = await axios.get(url, { headers })
 
     for (const v of res.data.data?.msg_list || []) {
-      const messageId = genGroupMessageId(Number(groupId), Number(v.sender_uin), v.msg_seq, v.sender_time, v.msg_random)
+      // const messageId = genGroupMessageId(Number(groupId), Number(v.sender_uin), v.msg_seq, v.sender_time, v.msg_random)
+      const messageId = (await this.super.pickGroup(Number(groupId)).getChatHistory(v.msg_seq, 1))[0].message_id
       list.push({
         groupId,
         senderId: v.sender_uin,
@@ -397,7 +397,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async getFriendList (refresh?: boolean | undefined) {
-    const friendList: Map<number, FriendInfo> = await this.super.getFriendList()
+    const friendList: Map<number, FriendInfo> = this.super.getFriendList()
     return Array.from(friendList.values()).map(v => {
       const userId = String(v.user_id)
       return {
@@ -426,7 +426,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   }
 
   async getGroupList (refresh?: boolean | undefined) {
-    const info: Map<number, GroupInfo> = await this.super.getGroupList()
+    const info: Map<number, GroupInfo> = this.super.getGroupList()
     return Array.from(info.values()).map(v => {
       const groupId = String(v.group_id)
       const groupName = v.group_name
@@ -530,8 +530,8 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     await this.super.setGroupAddRequest(requestId, isApprove)
   }
 
-  async setMsgReaction (contact: Contact, messageId: string, faceId: number, isSet: boolean) {
-    const { group_id, seq } = parseGroupMessageId(messageId)
+  async setMsgReaction (_contact: Contact, messageId: string, faceId: number, _isSet: boolean) {
+    const { group_id, seq } = await this.super.getMsg(messageId) as GroupMessage
     return await this.super.pickGroup(group_id).setReaction(seq, String(faceId))
   }
 
@@ -543,6 +543,14 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
         await this.super.pickFriend(Number(contact.peer)).sendFile(file, name)
       }
     } catch {
+    }
+  }
+
+  /** 获取 QQ 相关接口凭证 */
+  async getCredentials (domain: Domain): Promise<{ cookies: string; csrf_token: number }> {
+    return {
+      cookies: (await this.getCookies(domain)).cookie,
+      csrf_token: this.super.bkn
     }
   }
 
