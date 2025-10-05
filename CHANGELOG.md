@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.6.2...v1.7.0) (2025-10-05)
+
+
+### Features
+
+* 新增设置头像接口 ([8cd9240](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/8cd9240422f1d3d01b49738decfe2110fc78040d))
+
 ## [1.6.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.6.1...v1.6.2) (2025-09-25)
 
 
