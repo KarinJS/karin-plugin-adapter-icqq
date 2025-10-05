@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.6.1...v1.6.2) (2025-09-25)
+
+
+### Bug Fixes
+
+* 优化消息处理逻辑 ([ed1bac3](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/ed1bac3924d6e2f7b83e196a157fb5341cb8322a))
+
 ## [1.6.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/v1.6.0...v1.6.1) (2025-09-21)
 
 
