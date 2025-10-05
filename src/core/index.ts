@@ -562,6 +562,10 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     return { token: this.super.bkn }
   }
 
+  async setAvatar (file: string): Promise<void> {
+    await this.super.setAvatar(file)
+  }
+
   // 先暂时不写
   // async downloadFile () {}
 
