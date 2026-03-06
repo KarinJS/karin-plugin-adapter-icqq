@@ -1,4 +1,4 @@
-import { hd, mobile, tim, watch } from '@/imports/device'
+import { hd, mobile, tim, watch } from '@/common/device'
 import { Apk, Client, Platform } from 'icqq'
 
 export class ICQQClient extends Client {

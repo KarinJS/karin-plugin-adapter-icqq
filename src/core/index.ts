@@ -27,7 +27,7 @@ import {
 import type { Message } from 'node-karin'
 import { AdapterConvertKarin, KarinConvertAdapter } from './convert'
 import axios from 'node-karin/axios'
-import { sendToAllAdmin } from '@/imports'
+import { sendToAllAdmin } from '@/common'
 import { createMessage, createNoice, createRequest } from '@/create'
 import { Login } from './login'
 import { ICQQClient } from './Client'

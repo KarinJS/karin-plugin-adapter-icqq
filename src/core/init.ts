@@ -2,7 +2,7 @@ import { AdapterICQQ } from './index'
 import { createRequire } from 'module'
 import { karinPathBase } from 'node-karin'
 import { Config } from '@/config'
-import { Root } from '@/imports'
+import { Root } from '@/common'
 
 export function main () {
   const tmp = {

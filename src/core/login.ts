@@ -2,10 +2,10 @@ import { Agent } from 'https'
 import axios from 'node-karin/axios'
 import { AdapterICQQ } from './index'
 import WebSocket from 'node-karin/ws'
-import { sendToAllAdmin } from '@/imports'
+import { sendToAllAdmin } from '@/common'
 import type { Message, SendMessage } from 'node-karin'
 import { logger, karin, segment, common } from 'node-karin'
-import type { VerifyOptions } from '@/tools/types'
+import type { VerifyOptions } from '@/types/types'
 
 /** 处理登录请求 */
 export class Login {

@@ -50,7 +50,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2584',
     buildtime: 1751448568,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.405.873'
   },
   {
     name: 'A9.1.97.b351e214',
@@ -62,19 +63,21 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2582',
     buildtime: 1748422598,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.404.864'
   },
   {
-    name: 'A9.1.95.1eed49c0',
+    name: 'A9.1.95.e651de7e',
     version: '9.1.95.27050',
     ver: '9.1.95',
-    subid: 537297272,
-    apad_subid: 537297311,
+    subid: 537297350,
+    apad_subid: 537297389,
     qua: 'V1_AND_SQ_9.1.95_10460_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2582',
     buildtime: 1748422598,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.404.864'
   },
   {
     name: 'A9.1.92.cb84b334',
@@ -86,7 +89,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2581',
     buildtime: 1747820974,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.403.855'
   },
   {
     name: 'A9.1.91.304e0cba',
@@ -98,7 +102,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2581',
     buildtime: 1747820974,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.403.855'
   },
   {
     name: 'A9.1.90.58326526',
@@ -109,9 +114,9 @@ export const mobile: Apk[] = [
     qua: 'V1_AND_SQ_9.1.90_10290_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2581',
-    buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    buildtime: 1747820974,
+    ssover: 22,
+    fekit_ver: '8.403.855'
   },
   {
     name: 'A9.1.76.83ddc95d',
@@ -122,9 +127,9 @@ export const mobile: Apk[] = [
     qua: 'V1_AND_SQ_9.1.76_10076_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2578',
-    buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    buildtime: 1746016194,
+    ssover: 22,
+    fekit_ver: '8.402.848'
   },
   {
     name: 'A9.1.75.ec478a78',
@@ -135,9 +140,9 @@ export const mobile: Apk[] = [
     qua: 'V1_AND_SQ_9.1.75_10068_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2578',
-    buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    buildtime: 1746016194,
+    ssover: 22,
+    fekit_ver: '8.402.840'
   },
   {
     name: 'A9.1.71.7bacc589',
@@ -148,9 +153,9 @@ export const mobile: Apk[] = [
     qua: 'V1_AND_SQ_9.1.71_9906_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2574',
-    buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    buildtime: 1745224715,
+    ssover: 22,
+    fekit_ver: '8.401.830'
   },
   {
     name: 'A9.1.70.88c475c0',
@@ -161,9 +166,9 @@ export const mobile: Apk[] = [
     qua: 'V1_AND_SQ_9.1.70_9898_YYB_D',
     channel: 'GuanWang',
     sdkver: '6.0.0.2574',
-    buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    buildtime: 1745224715,
+    ssover: 22,
+    fekit_ver: '8.401.830'
   },
   {
     name: 'A9.1.67.06b27928',
@@ -175,8 +180,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2570',
     buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.400.814'
   },
   {
     name: 'A9.1.65.5017700a',
@@ -188,8 +193,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2570',
     buildtime: 1742975242,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.400.814'
   },
   {
     name: 'A9.1.60.045f5d19',
@@ -201,8 +206,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2568',
     buildtime: 1740483688,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.400.807'
   },
   {
     name: 'A9.1.55.464b50b2',
@@ -214,9 +219,10 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2568',
     buildtime: 1740483688,
-    bitmap: 150470524,
-    ssover: 22
-  }, {
+    ssover: 22,
+    fekit_ver: '8.309.798'
+  },
+  {
     name: 'A9.1.52.b97ab15e',
     version: '9.1.52.23535',
     ver: '9.1.52',
@@ -226,9 +232,10 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2566',
     buildtime: 1737457591,
-    bitmap: 150470524,
-    ssover: 22
-  }, {
+    ssover: 22,
+    fekit_ver: '8.308.786'
+  },
+  {
     name: 'A9.1.50.83cc325e',
     version: '9.1.50.23520',
     ver: '9.1.50',
@@ -238,8 +245,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2566',
     buildtime: 1737457591,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.308.786'
   }, {
     name: 'A9.1.35.9f1a1697',
     version: '9.1.35.22670',
@@ -250,8 +257,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.307.779'
   }, {
     name: 'A9.1.31.cb8cd007',
     version: '9.1.31.22255',
@@ -262,8 +269,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.306.776'
   }, {
     name: 'A9.1.30.a920c625',
     version: '9.1.30.22245',
@@ -274,8 +281,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.306.776'
   }, {
     name: 'A9.1.25.008c1bb3',
     version: '9.1.25.21820',
@@ -286,8 +293,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.305.770'
   }, {
     name: 'A9.1.20.fa404fa6',
     version: '9.1.20.21395',
@@ -298,8 +305,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.304.766'
   }, {
     name: 'A9.1.16.3fe73575',
     version: '9.1.16.20980',
@@ -310,8 +317,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.303.759'
   }, {
     name: 'A9.1.15.25851cef',
     version: '9.1.15.20970',
@@ -322,8 +329,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.303.755'
   }, {
     name: 'A9.1.10.2ce90365',
     version: '9.1.10.20545',
@@ -334,8 +341,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.302.739'
   }, {
     name: 'A9.1.5.468dd2ea',
     version: '9.1.5.20120',
@@ -346,8 +353,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2565',
     buildtime: 1728390173,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.301.724'
   }, {
     name: 'A9.1.0.2129b4e8',
     version: '9.1.0.19695',
@@ -358,8 +365,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2564',
     buildtime: 1724730201,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.209.692'
   }, {
     name: 'A9.0.95.705d26da',
     version: '9.0.95.19320',
@@ -370,8 +377,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2563',
     buildtime: 1724313621,
-    bitmap: 150470524,
-    ssover: 22
+    ssover: 22,
+    fekit_ver: '8.208.645'
   }, {
     name: 'A9.0.90.38ae7504',
     version: '9.0.90.18945',
@@ -382,8 +389,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.207.627'
   }, {
     name: 'A9.0.85.491c232e',
     version: '9.0.85.18570',
@@ -394,9 +401,10 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
-  }, {
+    ssover: 21,
+    fekit_ver: '8.206.607'
+  },
+  {
     name: 'A9.0.81.3daf0e38',
     version: '9.0.81.18205',
     ver: '9.0.81',
@@ -406,8 +414,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.205.580'
   }, {
     name: 'A9.0.80.0d6f99ed',
     version: '9.0.80.18195',
@@ -418,8 +426,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.205.580'
   }, {
     name: 'A9.0.75.c0dc0382',
     version: '9.0.75.17920',
@@ -430,8 +438,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.204.574'
   }, {
     name: 'A9.0.71.e2f45246',
     version: '9.0.71.17655',
@@ -442,8 +450,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.203.564'
   }, {
     name: 'A9.0.70.e4b76fcc',
     version: '9.0.70.17645',
@@ -454,8 +462,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2561',
     buildtime: 1718353600,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.203.564'
   }, {
     name: 'A9.0.65.530ce28d',
     version: '9.0.65.17370',
@@ -466,8 +474,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2560',
     buildtime: 1713424357,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.202.560'
   }, {
     name: 'A9.0.60.c5f71993',
     version: '9.0.60.17095',
@@ -478,8 +486,8 @@ export const mobile: Apk[] = [
     channel: 'GuanWang',
     sdkver: '6.0.0.2560',
     buildtime: 1713424357,
-    bitmap: 150470524,
-    ssover: 21
+    ssover: 21,
+    fekit_ver: '8.201.556'
   }, {
     name: 'A9.0.56.c25547f8',
     version: '9.0.56.16830',

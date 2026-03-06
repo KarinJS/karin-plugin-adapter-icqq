@@ -1,4 +1,4 @@
-import { Root } from '@/imports/Root'
+import { Root } from '@/common/Root'
 import { ConfigType } from './types'
 import fs from 'node:fs'
 import { existsSync, karinPathBase, logger, mkdirSync, requireFileSync } from 'node-karin'

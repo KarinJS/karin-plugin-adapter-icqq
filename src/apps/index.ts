@@ -1,4 +1,4 @@
-import { VerifyOptions } from '@/tools/types'
+import { VerifyOptions } from '@/types/types'
 import karin from 'node-karin'
 
 export const verify = karin.command(/^#qq验证.+:.+$/i, async (e) => {
