@@ -10,36 +10,36 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-          release-type: node
-          default-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
       # 检出代码
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
       # 设置 Node.js
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: "https://registry.npmjs.org"
         if: ${{ steps.release.outputs.release_created }}
       # 设置 pnpm
       - name: 设置 pnpm
-        uses: pnpm/action-setup@v2
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        uses: pnpm/action-setup@v4
         with:
           version: 9
-          run_install: true
+        if: ${{ steps.release.outputs.release_created }}
+      # 安装依赖
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
       # 构建输出
       - run: pnpm run build
         if: ${{ steps.release.outputs.release_created }}
-      # 删除开发依赖
-      - run: npm pkg delete devDependencies
-        if: ${{ steps.release.outputs.release_created }}
-      # 发布到 npm
+      # 发布 packages/core 到 npm
       - run: pnpm run pub
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

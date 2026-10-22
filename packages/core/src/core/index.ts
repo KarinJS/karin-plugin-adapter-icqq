@@ -32,6 +32,7 @@ import { createMessage, createNoice, createRequest } from '@/create'
 import { Login } from './login'
 import { ICQQClient } from './Client'
 import { CfgType } from '@/config'
+import { beginVerification, clearVerification, handleLoginError } from './verification'
 
 /**
  * - ICQQ适配器
@@ -71,6 +72,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
   async init (bot: CfgType, e?: Message) {
     const login = new Login(e)
     this.super.on('system.online', () => {
+      clearVerification(Number(this.self_id), true)
       this.logger('info', '登录成功~')
       this.account.name = this.super.nickname
       /** 注册bot */
@@ -80,6 +82,7 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
 
     /** 监听掉线 掉线后卸载bot并发送消息到所有主人 */
     this.super.on('system.offline', (event) => {
+      clearVerification(Number(this.self_id), true)
       unregisterBot('index', this.adapter.index)
       sendToAllAdmin(`[${this.selfId}]账号下线:\n${event?.message}\n发送#QQ上线${this.selfId} 重新登陆`)
     })
@@ -100,13 +103,23 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     this.super.on('system.login.qrcode', (event) => login.qrcode(event.image, this))
 
     /** 遇到滑动验证码(滑块) */
-    this.super.on('system.login.slider', (event) => login.slider(event.url, this))
+    this.super.on('system.login.slider', (event) => {
+      beginVerification('slider', event.url, this)
+    })
+
+    /** 遇到新版登录安全验证 */
+    this.super.on('system.login.auth', (event) => {
+      beginVerification('auth', event.url, this, { deviceInfo: event.device })
+    })
 
     /** 遇到短信验证码(包含真假设备锁) */
-    this.super.on('system.login.device', (event) => login.device(event, this))
+    this.super.on('system.login.device', (event) => {
+      beginVerification('device', event.url, this, { phone: event.phone })
+    })
 
     /** 遇到登录错误的信息 */
     this.super.on('system.login.error', (event) => {
+      handleLoginError(Number(this.self_id), event.code, event.message || `登录错误 (${event.code})`)
       this.logger('error', `[登录错误] 错误代码: ${event.code}`)
       this.logger('error', `[登录失败] 错误信息: ${event.message}`)
     })
@@ -530,9 +543,9 @@ export class AdapterICQQ extends AdapterBase implements AdapterType {
     await this.super.setGroupAddRequest(requestId, isApprove)
   }
 
-  async setMsgReaction (_contact: Contact, messageId: string, faceId: number, _isSet: boolean) {
+  async setMsgReaction (_contact: Contact, messageId: string, faceId: string | number, _isSet: boolean): Promise<void> {
     const { group_id, seq } = await this.super.getMsg(messageId) as GroupMessage
-    return await this.super.pickGroup(group_id).setReaction(seq, String(faceId))
+    await this.super.pickGroup(group_id).setReaction(seq, String(faceId))
   }
 
   async uploadFile (contact: Contact, file: string, name: string, folder?: string) {

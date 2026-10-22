@@ -1,7 +1,7 @@
 import neostandard from 'neostandard'
 
 const data = neostandard({
-  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'dist'],
+  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'dist', 'packages/core/dist', 'packages/core/web'],
   globals: ['logger', 'NodeJS'],
   ts: true,
 })

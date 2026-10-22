@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#070a12">
+  <title>ICQQ 账号管理</title>
+  <script>
+    (() => {
+      try {
+        const stored = localStorage.getItem('theme')
+        const theme = stored === 'dark' || stored === 'light'
+          ? stored
+          : window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        document.documentElement.dataset.theme = theme
+        document.documentElement.classList.toggle('dark', theme === 'dark')
+      } catch {}
+    })()
+  </script>
+  <link rel="stylesheet" href="/icqq/web/assets/style.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/icqq/web/assets/app.js"></script>
+</body>
+</html>

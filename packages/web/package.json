@@ -1,0 +1,31 @@
+{
+  "name": "@karinjs/adapter-icqq-web",
+  "version": "1.7.1",
+  "private": true,
+  "description": "Account console for the ICQQ adapter",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/prepare.mjs && tsdown && tailwindcss -i ./src/styles.css -o ../core/web/assets/style.css --minify",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "tsdown": "^0.21.10",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@heroui/react": "^3.2.6",
+    "@heroui/styles": "^3.2.6",
+    "@internationalized/date": "^3.12.4",
+    "@react-aria/ssr": "^3.10.1",
+    "@react-aria/utils": "^3.34.1",
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-aria": "^3.53.1",
+    "react-aria-components": "^1.22.1",
+    "react-dom": "^19.3.1"
+  }
+}

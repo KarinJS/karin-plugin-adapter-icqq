@@ -1,4 +1,4 @@
-import { Apk } from 'icqq'
+import { Apk, core as icqqCore } from 'icqq'
 
 export const mobile: Apk[] = [
   {
@@ -798,6 +798,7 @@ export const mobile: Apk[] = [
   device_type: -1,
   bitmap: 0x08f7ff7c,
   client_ver: 0,
+  login_platform: icqqCore.NTLoginPlatform.Android,
   ...e
 }))
 export const tim: Apk[] = [
@@ -941,6 +942,7 @@ export const tim: Apk[] = [
   device_type: -1,
   bitmap: 150470524,
   client_ver: 0,
+  login_platform: icqqCore.NTLoginPlatform.Android,
   ...e
 }))
 export const watch: Apk[] = [
@@ -1007,6 +1009,7 @@ export const watch: Apk[] = [
   device_type: 8,
   // bitmap: 150470524,
   client_ver: 0,
+  login_platform: icqqCore.NTLoginPlatform.Android,
   ...e
 }))
 export const hd: Apk = {
@@ -1026,5 +1029,7 @@ export const hd: Apk = {
   display: 'iMac',
   device_type: 5,
   qua: '',
-  ssover: 12
+  ssover: 12,
+  client_ver: 0,
+  login_platform: icqqCore.NTLoginPlatform.Mac
 }

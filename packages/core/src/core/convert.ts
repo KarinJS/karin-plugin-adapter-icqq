@@ -60,6 +60,26 @@ export async function AdapterConvertKarin (bot: AdapterICQQ, data: Array<Message
 }
 
 /**
+ * 生成各音乐平台的分享链接
+ * @param platform 音乐平台
+ * @param id 歌曲 ID
+ */
+const musicUrl = (platform: 'qq' | '163' | 'migu' | 'kugou' | 'kuwo', id: string): string => {
+  switch (platform) {
+    case 'qq':
+      return `https://y.qq.com/n/ryqq/songDetail/${id}`
+    case '163':
+      return `https://music.163.com/song?id=${id}`
+    case 'migu':
+      return `https://music.migu.cn/v3/music/song/${id}`
+    case 'kugou':
+      return `https://www.kugou.com/song/#hash=${id}`
+    case 'kuwo':
+      return `https://www.kuwo.cn/play_detail/${id}`
+  }
+}
+
+/**
  * Karin转icqq
  * @param data Karin格式消息
  */
@@ -112,7 +132,8 @@ export const KarinConvertAdapter = async (bot: AdapterICQQ, data: Array<SendElem
         if (i.platform === 'custom') {
           // ICQQ不支持custom
         } else {
-          elements.push(await Segment.music(i.id, i.platform))
+          const url = musicUrl(i.platform, i.id)
+          elements.push(Segment.share(url, '音乐分享', undefined, '点击播放'))
         }
         break
       }

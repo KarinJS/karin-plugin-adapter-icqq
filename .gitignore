@@ -1,8 +1,6 @@
 # 包管理器文件
 yarn.lock
 package-lock.json
-pnpm-lock.yaml
-pnpm-workspace.yaml
 
 # 包管理器日志
 npm-debug.log*
@@ -32,3 +30,8 @@ node_modules/
 config/config/pm2.yaml
 src/qq.ts
 /dist
+
+# 子包构建产物
+/packages/core/dist/
+/packages/core/web/
+/packages/*/node_modules/
