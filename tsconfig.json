@@ -9,10 +9,9 @@
     "types": [
       "node"
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "packages/core/src/*"
+        "./packages/core/src/*"
       ]
     }
   },
