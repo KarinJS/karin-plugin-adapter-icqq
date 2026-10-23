@@ -1,6 +1,6 @@
 {
   "name": "karin-plugin-adapter-icqq-workspace",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "private": true,
   "description": "Workspace for the ICQQ adapter and its account console",
   "type": "module",
