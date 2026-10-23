@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/adapter-icqq-v1.8.1...adapter-icqq-v1.8.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* 修复插件管理无法打开的问题 ([ae67260](https://github.com/KarinJS/karin-plugin-adapter-icqq/commit/ae67260832d87ebc4c22e09f95ad8d50778f6898))
+
 ## [1.8.1](https://github.com/KarinJS/karin-plugin-adapter-icqq/compare/adapter-icqq-v1.8.0...adapter-icqq-v1.8.1) (2026-10-23)
 
 
