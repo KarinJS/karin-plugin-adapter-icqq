@@ -12,7 +12,6 @@
     "lint": "eslint packages/core/src packages/web/src",
     "dev": "pnpm --filter @karinjs/adapter-icqq dev",
     "karin": "pnpm --filter @karinjs/adapter-icqq karin",
-    "pub": "pnpm --filter @karinjs/adapter-icqq pub",
     "sort": "sort-package-json packages/core/package.json packages/web/package.json package.json"
   },
   "devDependencies": {
