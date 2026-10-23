@@ -1,6 +1,6 @@
 {
   "name": "@karinjs/adapter-icqq-web",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "description": "Account console for the ICQQ adapter",
   "type": "module",
