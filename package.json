@@ -16,6 +16,7 @@
     "sort": "sort-package-json packages/core/package.json packages/web/package.json package.json"
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
     "eslint": "^9.35.0",
     "neostandard": "^0.12.2",
     "sort-package-json": "^3.4.0",

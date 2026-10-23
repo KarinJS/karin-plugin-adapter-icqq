@@ -30,14 +30,11 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.5.2",
-    "eslint": "^9.35.0",
     "icqq": "npm:@icqqjs/icqq@^1.7.2",
     "neostandard": "^0.12.2",
     "node-karin": "^1.18.0",
     "tsdown": "^0.21.10",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
+    "tsx": "^4.20.5"
   },
   "peerDependencies": {
     "icqq": ">=0.6.10"
