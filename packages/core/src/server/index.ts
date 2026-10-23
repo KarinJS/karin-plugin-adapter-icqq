@@ -260,7 +260,12 @@ export function initServer (): void {
       )
       return
     }
-    res.sendFile(indexFile)
+    /**
+     * 生产环境通过 pnpm 安装时，插件实际位于 `.pnpm` 目录下。
+     * express/send 默认忽略路径中的点目录（dotfiles），会直接返回
+     * NotFoundError: Not Found，因此这里显式允许发送该文件。
+     */
+    res.sendFile(indexFile, { dotfiles: 'allow' })
   }
 
   app.get(WEB_PREFIX, sendIndex)
